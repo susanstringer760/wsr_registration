@@ -171,12 +171,10 @@ class PeopleController < ApplicationController
     @roommate1 = Person.get_roommate(@person.roommate_id1)
     @roommate2 = Person.get_roommate(@person.roommate_id2)
     #@note_hash = Person.get_notes(@person)
-@note_hash = Hash.new
-#render :text=>"#{@person} and #{@params} and #{@roommate1} and #{@roommate2}"
-#return
+#@note_hash = Hash.new
 
-    PersonMailer.registration_confirmation(@person).deliver
-    #PersonMailer.registration_confirmation(@person,@params, @roommate1, @roommate2).deliver
+    #PersonMailer.registration_confirmation(@person).deliver
+    PersonMailer.registration_confirmation(@person,@params, @roommate1, @roommate2).deliver
 
   end
 
