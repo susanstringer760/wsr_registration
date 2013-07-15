@@ -1,0 +1,1 @@
+<h3><%= DateTime.now.strftime("%F %T") %>: report sent</h3>

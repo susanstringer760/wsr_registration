@@ -1,0 +1,32 @@
+<%= link_to 'Back to list', people_path %><br>
+<%= link_to 'Add note', new_person_note_path(:person_id=>@person.id) %><br>
+<%= link_to 'Edit', edit_person_path(@person) %>
+
+<% @person.attributes.each{|key, value| %>
+  <% next if (key.eql?('roommate_id1')) %>
+  <% next if (key.eql?('roommate_id2')) %>
+  <% if ( key.eql?('occupancy')) %>
+    <% value = @occupancy_by_id[value.to_s] %>
+  <% end %>
+  <p><b><%= key %></b>: <%= value %></p>
+<% } %>
+<% if ( @person.occupancy > 1 ) %>
+  <p><b>Roommate 1: </b><%= @roommate1 %></p>
+<% end %>
+<% if ( @person.occupancy > 2 ) %>
+  <p><b>Roommate 2: </b><%= @roommate2 %></p>
+<% end %>
+
+<table border='0'>
+<% @note_hash.each do |note_type,note_arr| %>
+  <tr><td colspan='2'><b><%= note_type.capitalize %><br></b></td></tr>
+   <% note_arr.each do |note| %>
+      <tr><td><%= note.content %><br></td></tr>
+     <% end %>
+  </tr>
+<% end %>
+</table>
+
+<%= link_to 'Back to list', people_path %><br>
+<%= link_to 'Add note', new_person_note_path(:person_id=>@person.id) %></br>
+<%= link_to 'Edit', edit_person_path(@person) %>

@@ -1,0 +1,142 @@
+<% payment_type_list = {'None'=>'none','Check'=>'check','Cash'=>'cash'} %>
+<% payment_status_list = {'Paid'=>'paid','Partial'=>'partial' } %>
+<% registration_status_list = {'Registered'=>'registered','Wait List'=>'wait_list', 'Pending'=>'pending' } %>
+<% due_date = Date.parse('31-07-2013') %>
+
+<%= form_for(@person) do |f| %>
+  <% if @person.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@person.errors.count, "error") %> prohibited this person from being saved:</h2>
+
+      <ul>
+      <% @person.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+<h1><%= caller %></h1>
+
+<div class="field">
+<table border='1'>
+  <tr>
+    <td><b>Last name:</b></td>
+    <td><%= f.text_field :last_name %></td>
+  </tr>
+  <tr>
+    <td><b>First name:</b></td>
+    <td><%= f.text_field :first_name %></td>
+  </tr>
+  <tr>
+    <td><b>Email:</b></td>
+    <td><%= f.text_field :email %></td>
+  </tr>
+  <tr>
+    <td><b>Phone:</b></td>
+    <td><%= f.text_field :phone %></td>
+  </tr>
+</table>
+<hr>
+<table border=1 cellpadding=5>
+  <tr>
+    <td colspan='2'><b>Payment information</b></td>
+  </tr>
+  <tr>
+    <td><b>Amount:</b></td>
+    <% if caller.eql?('new') %>
+    <td><%= f.text_field :paid_amount, {:size=>8, :value=>0.0} %></td>
+    <% else %>
+    <td><%= f.text_field :paid_amount, {:size=>8} %></td>
+    <% end %>
+
+  </tr>
+  <tr>
+    <td><b>Payment type:</b></td>
+    <td><%= f.select(:payment_type, payment_type_list, {:selected=>'None'} ) %></td>
+  </tr>
+  <tr>
+    <td><b>Check Number:</b></td>
+    <td><%= f.text_field :check_num, :size=>8 %></td>
+  </tr>
+  <tr>
+    <td><b>Scholarship received:</b></td>
+    <td><%= f.text_field :scholarship_amount, {:size=>8, :value=>0.0} %></td>
+  </tr>
+  <tr>
+    <td><b>Scholarship donated:</b></td>
+    <td><%= f.text_field :scholarship_donation, {:size=>8, :value=>0.0} %></td>
+  </tr>
+  <tr>
+    <td><b>Payment status: </b>
+    <td><%= f.select(:payment_status, payment_status_list) %></td>
+  </tr>
+  <tr>
+    <td><b>Date paid: </b>
+    <td><%= f.date_select :paid_date %></td>
+  </tr>
+  <tr>
+    <td><b>Date due: </b>
+    <td><%= f.date_select :due_date %></td>
+  </tr>
+</table>
+<table border='1'>
+  <tr>
+    <td colspan='2'><b>Registration information</b></td>
+  </tr>
+  <tr>
+    <td><b>Registration status:</b>
+    <td><%= f.select(:registration_status, registration_status_list) %></td>
+  </tr>
+  <tr>
+    <td><b>Registration date:</b></td>
+    <td><%= f.date_select :registration_date %></td>
+  </tr>
+  <tr>
+    <td><b>Occupancy:</b>
+    <td><%= f.select(:occupancy, @occupancy_by_value, :value=>'2') %></td>
+  </td></tr>
+  <tr>
+    <td><b>Wait list number:</b>
+    <td><%= f.text_field :wait_list_num, :size=>8 %></td>
+  </tr>
+  <tr>
+    <td><b>Can drive #:</b>
+    <td><%= f.text_field :can_drive_num, :size=>8 %></td>
+  </tr>
+  <tr>
+    <td><b>Needs ride #:</b>
+    <td>
+    True<%= f.radio_button :needs_ride, "1" %><br>
+    False<%= f.radio_button :needs_ride, "0", :checked=>'true' %>
+    </td>
+  </tr>
+  <tr>
+    <td><b>Roommate 1:</b></td>
+    <% if caller.eql?('new') %>
+      <td><%= f.select :roommate_id1, @roommates ,{:selected=>'NONE'} %>
+    <% else %>
+      <td><%= f.select :roommate_id1, @roommates %>
+     <% end %>
+  </tr>
+  <tr>
+    <td><b>Roommate 2:</b></td>
+    <% if caller.eql?('new') %>
+      <td><%= f.select :roommate_id2, @roommates ,{:selected=>'NONE'} %>
+    <% else %>
+      <td><%= f.select :roommate_id2, @roommates %>
+     <% end %>
+  </tr>
+  <tr>
+  </tr>
+</table>
+<hr>
+<table border=1>
+  <tr><td>
+  <div class="actions">
+    <%= f.submit "Submit" %>
+  </div>
+  </td></tr>
+</table>
+</div>
+
+<% end %>

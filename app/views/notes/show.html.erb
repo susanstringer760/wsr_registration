@@ -1,0 +1,25 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <b>Date time:</b>
+  <%= @note.date_time %>
+</p>
+
+<p>
+  <b>Content:</b>
+  <%= @note.content %>
+</p>
+
+<p>
+  <b>Note type:</b>
+  <%= @note.note_type %>
+</p>
+
+<p>
+  <b>Person:</b>
+  <%= @person.first_name %>&nbsp;<%=@person.last_name%>
+</p>
+
+
+<%= link_to 'Edit', edit_person_note_path(:person_id=>@person.id) %> |
+<%= link_to 'Back to list', people_path %>

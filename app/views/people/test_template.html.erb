@@ -1,0 +1,13 @@
+Hi <%= @person.first_name %>,
+<p></p>
+Thank you for registering for the 2013 Women's Spiritual Retreat. This is a confirmation of your registration status. Please review the information below and let me know if there are any changes.
+<p></p>
+
+<% @params.each do |p| %>
+  <%= p %><br>
+<% end %>
+
+<% @filtered_notes.each do |n| %>
+  <%= n.content %>
+<% end %>
+
