@@ -154,9 +154,8 @@ class PeopleController < ApplicationController
     @date_time = DateTime.now.strftime("%F %T")
 
     @person = Person.find(params[:id]) 
-    render :text=>"testit: #{@person.first_name} and #{@person.last_name}"
-return
     @notes = @person.notes
+
     params[:note] = Hash.new
     params[:note] = {:content=>"#{@date_time}: registration confirmation sent", 
                      :note_type=>"general",
@@ -176,7 +175,7 @@ return
 #render :text=>"#{@person} and #{@params} and #{@roommate1} and #{@roommate2}"
 #return
 
-    #PersonMailer.registration_confirmation(@person,@params, @roommate1, @roommate2, @note_hash).deliver
+    PersonMailer.registration_confirmation(@person).deliver
     #PersonMailer.registration_confirmation(@person,@params, @roommate1, @roommate2).deliver
 
   end
