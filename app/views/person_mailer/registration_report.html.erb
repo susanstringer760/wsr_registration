@@ -1,0 +1,18 @@
+Hi Clare and Joanne,
+<p></p>
+I am going to double check the registration information to make sure that it's correct.  I can generate this report as often as necessary...just let me know if you need any other info in the report.
+<p></p>
+
+<%  date_time = DateTime.now.strftime("%F %T") %>
+Here is the registration report as of <%= date_time %>:
+<p></p>
+<%= number_to_currency(@total_paid) %>
+<%= number_to_currency(@total_balance_due) %>
+<%= @total_registered %>
+<%= @registered_pending_count %>
+<%= @registered_paid_count %>
+<%= number_to_currency(@total_scholarship_amount) %>
+<%= number_to_currency(@total_scholarship_given) %>
+<% @arr.each do |p| %>
+  <%= p %><br>
+<% end %>
