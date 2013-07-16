@@ -6,9 +6,8 @@
 <table border='1'>
   <tr>
     <th><%= link_to 'Name', people_path(:sort_by=>'last_name') %></th>
-    <th>Email</th>
-    <th>Phone</th>
-    <th>Total</th>
+    <th>Occupancy</th>
+    <th>Total due</th>
     <th>Paid</th>
     <th><%= link_to 'Balance due', people_path(:sort_by=>'balance_due') %></th>
     <th><%= link_to 'Payment status', people_path(:sort_by=>'payment_status') %></th>
@@ -19,9 +18,18 @@
 <% @people.each do |person| %>
   <tr>
     <% name = "#{person.first_name} #{person.last_name}" %>
-    <td><%= link_to name, person_path(person.id) %></td>
-    <td><%= person.email %></td>
-    <td><%= person.phone %></td>
+    <td>
+    <%= link_to name, person_path(person.id) %>
+    <%  if (person.occupancy > 1) %>
+       <% id = person.roommate_id1 %>
+       <br>[<%= link_to @roommate_hash[id.to_s], person_path(id) %>]
+    <% end %>
+    <%  if (person.occupancy > 2) %>
+       <% id = person.roommate_id2 %>
+       <br>[<%= link_to @roommate_hash[id.to_s], person_path(id) %>]
+    <% end %>
+    </td>
+    <td><%= @occupancy_by_id[person.occupancy.to_s] %>
     <td><%= number_to_currency(@prices[person.occupancy]) %></td>
     <td><%= number_to_currency(person.paid_amount) %></td>
     <% if person.balance_due.to_f > 0 %>
@@ -35,7 +43,7 @@
     <%= link_to 'Edit', edit_person_path(person) %><br>
     <% destroy_msg = "Destroy #{person.first_name} #{person.last_name}?" %>
     <%= link_to 'Destroy', person, method: :delete, data: { confirm: destroy_msg } %></td>
-    <td><%= link_to 'Send registration confirmation', mail_confirmation_path(person.id) %></td>
+    <td><%= link_to 'Send confirmation', mail_confirmation_path(person.id) %></td>
     <td><%= link_to 'Add note', new_person_note_path(:person_id=>person.id) %>
     <td><%= link_to 'General notes', person_notes_path(:person_id=>person.id, :filter_by=>'general') %>
     <td><%= link_to 'Confirmation notes', person_notes_path(:person_id=>person.id, :filter_by=>'confirmation') %>

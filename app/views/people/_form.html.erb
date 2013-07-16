@@ -1,6 +1,6 @@
 <% payment_type_list = {'None'=>'none','Check'=>'check','Cash'=>'cash'} %>
 <% payment_status_list = {'Paid'=>'paid','Partial'=>'partial' } %>
-<% registration_status_list = {'Registered'=>'registered','Wait List'=>'wait_list', 'Pending'=>'pending' } %>
+<% registration_status_list = {'Registered'=>'registered','Wait List'=>'wait_list', 'Pending'=>'pending', 'Hold'=>'hold' } %>
 <% due_date = Date.parse('31-07-2013') %>
 
 <%= form_for(@person) do |f| %>

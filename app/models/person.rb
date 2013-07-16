@@ -86,8 +86,12 @@ class Person < ActiveRecord::Base
      payment_status = 'pending' if (balance_due > 0 )
 
      # registration status
-     registration_status = 'registered' if (balance_due <= 0)
-     registration_status = 'pending' if (balance_due > 0)
+     if ( params[:registration_status].eql?('hold'))
+       registration_status = params[:registration_status]
+     else
+       registration_status = 'registered' if (balance_due <= 0)
+       registration_status = 'pending' if (balance_due > 0)
+     end
 
      # set the new values
      if ( balance_due < 0 )
@@ -144,16 +148,34 @@ class Person < ActiveRecord::Base
    def self.roommate_list(id)
 
      # array of available roommates
+     # if id is 0, then return a list
+     # of all people
      list = Array.new
      people = Person.find(:all, :order => "last_name")
      people.each do |p|
        name = "#{p.first_name} #{p.last_name}"
-       list.push([name ,p.id]) if (id != p.id)
-       #list.push([p.name,p.id]) if (id != p.id)
+       list.push([name ,p.id]) if ((id != p.id) || (id == 0))
      end
-     list.unshift(['NONE', 0])
+     #list.unshift(['NONE', 0])
+     list.unshift(['TBD', 0])
 
      return list
+
+   end
+
+   def self.roommate_hash
+
+     # get an array where each element
+     # is an array with name,id
+     roommate_hash = Hash.new
+     roommate_list = roommate_list(0)
+     roommate_list.each do |r|
+       key = r[1].to_s
+       value = r[0]
+       roommate_hash[key] = value
+     end
+
+     roommate_hash
 
    end
 
@@ -342,5 +364,12 @@ class Person < ActiveRecord::Base
 
     return hash
     
+  end
+
+  def self.get_roommate(person)
+
+    person_id = person.id
+    Person.where(["id = ?", person_id]).select("roommate_id1,roommate_id2").first
+
   end
 end

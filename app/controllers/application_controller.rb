@@ -20,8 +20,8 @@ class ApplicationController < ActionController::Base
   end
 
   def report_email
-    #@email_list = "sanityhasreturned@gmail.com,sensabama@aol.com,susanstringer760@comcast.net"
-    @email_list = "susanstringer760@comcast.net"
+    @email_list = "sanityhasreturned@gmail.com,sensabama@aol.com,susanstringer760@comcast.net"
+    #@email_list = "susanstringer760@comcast.net, snorman@ucar.edu"
   end
 
 end

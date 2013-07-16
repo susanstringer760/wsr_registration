@@ -8,7 +8,12 @@ class PeopleController < ApplicationController
     sort_by = params[:sort_by] :
     sort_by = 'last_name'
 
+    # list of people
     @people = Person.sort_by(sort_by) 
+
+    # hash of roommates where key is person id
+    # and value is person name
+    @roommate_hash = Person.roommate_hash()
 
     respond_to do |format|
       format.html # index.html.erb
@@ -248,7 +253,7 @@ class PeopleController < ApplicationController
       f.puts(stat)
     end
 
-    #PersonMailer.registration_report(@email_list,@arr).deliver
+    PersonMailer.registration_report(@email_list,@arr).deliver
 
     f.close
 
