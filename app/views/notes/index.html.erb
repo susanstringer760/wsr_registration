@@ -2,8 +2,6 @@
 
 <table>
   <tr>
-    <th>ID</th>
-    <th>Date time</th>
     <th>Content</th>
     <th>Type</th>
     <th>Person</th>
@@ -14,11 +12,9 @@
 
 <% @filtered_notes.each do |note| %>
   <tr>
-    <td><%= note.id%></td>
-    <td><%= note.date_time %></td>
     <td><%= note.content %></td>
     <td><%= note.note_type %></td>
-    <td><%= note.person_id %></td>
+    <td><%= @roommate_hash[note.person_id.to_s] %></td>
     <td><%= link_to 'Edit', edit_person_note_path(:person_id=>@person.id, :id=>note.id) %></td>
     <td><%= link_to 'Destroy', note, method: :delete, data: { confirm: 'Are you sure?' } %></td>
   </tr>

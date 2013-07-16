@@ -12,7 +12,7 @@
     <th><%= link_to 'Balance due', people_path(:sort_by=>'balance_due') %></th>
     <th><%= link_to 'Payment status', people_path(:sort_by=>'payment_status') %></th>
     <th><%= link_to 'Registration status', people_path(:sort_by=>'registration_status') %></th>
-    <th colspan='5'>Actions</th>
+    <th colspan='6'>Actions</th>
   </tr>
 
 <% @people.each do |person| %>
@@ -20,13 +20,21 @@
     <% name = "#{person.first_name} #{person.last_name}" %>
     <td>
     <%= link_to name, person_path(person.id) %>
-    <%  if (person.occupancy > 1) %>
+    <%  if (person.occupancy > 1 ) %>
        <% id = person.roommate_id1 %>
-       <br>[<%= link_to @roommate_hash[id.to_s], person_path(id) %>]
+       <% if (id == 0 ) %>
+         <br>[<%= @roommate_hash[id.to_s] %>]
+       <% else %>
+         <br>[<%= link_to @roommate_hash[id.to_s], person_path(id) %>]
+       <% end %>
     <% end %>
     <%  if (person.occupancy > 2) %>
        <% id = person.roommate_id2 %>
-       <br>[<%= link_to @roommate_hash[id.to_s], person_path(id) %>]
+       <% if (id == 0 ) %>
+         <br>[<%= @roommate_hash[id.to_s] %>]
+       <% else %>
+         <br>[<%= link_to @roommate_hash[id.to_s], person_path(id) %>]
+       <% end %>
     <% end %>
     </td>
     <td><%= @occupancy_by_id[person.occupancy.to_s] %>
@@ -47,6 +55,7 @@
     <td><%= link_to 'Add note', new_person_note_path(:person_id=>person.id) %>
     <td><%= link_to 'General notes', person_notes_path(:person_id=>person.id, :filter_by=>'general') %>
     <td><%= link_to 'Confirmation notes', person_notes_path(:person_id=>person.id, :filter_by=>'confirmation') %>
+    <td><%= link_to 'All notes', person_notes_path(:person_id=>person.id, :filter_by=>'all') %>
   </tr>
 <% end %>
 </table>

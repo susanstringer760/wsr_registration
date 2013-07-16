@@ -154,7 +154,7 @@ class Person < ActiveRecord::Base
      people = Person.find(:all, :order => "last_name")
      people.each do |p|
        name = "#{p.first_name} #{p.last_name}"
-       list.push([name ,p.id]) if ((id != p.id) || (id == 0))
+       list.push([name ,p.id]) if ((id != p.id) || (id != 0))
      end
      #list.unshift(['NONE', 0])
      list.unshift(['TBD', 0])
@@ -328,7 +328,7 @@ class Person < ActiveRecord::Base
 
     filtered_notes = Array.new
     person.notes.each do |n|
-      filtered_notes.push(n) if (filter_by.eql?(n.note_type))
+      filtered_notes.push(n) if (filter_by.eql?(n.note_type) || (filter_by.eql?('all')) )
     end
   
     filtered_notes
@@ -366,10 +366,14 @@ class Person < ActiveRecord::Base
     
   end
 
-  def self.get_roommate(person)
-
-    person_id = person.id
-    Person.where(["id = ?", person_id]).select("roommate_id1,roommate_id2").first
-
-  end
+#  def self.get_roommate(id)
+#
+#    #person_id = person.id
+#    (id == 0) ?
+#      roommate = 'TBD' :
+#      roommate = Person.where(["id = ?", person_id]).select("roommate_id1,roommate_id2").first
+#
+#    roommate
+#
+#  end
 end

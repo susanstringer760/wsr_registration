@@ -13,6 +13,7 @@ class NotesController < ApplicationController
     #end
     @filtered_notes = Person.get_filtered_notes(@person, filter_by)
 
+    @roommate_hash = Person.roommate_hash
 
     #@notes = Note.all
 
