@@ -14,6 +14,16 @@ class PersonMailer < ActionMailer::Base
 
   end
 
+  def registration_report(email_list,arr)
+
+     @email_list = email_list
+     @arr = arr
+
+     mail(:to=> @email_list, :subject => "WSR Stats")
+
+  end
+
+
 
   def rregistration_confirmation(person)
 
