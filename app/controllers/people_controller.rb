@@ -162,13 +162,11 @@ class PeopleController < ApplicationController
     @notes = @person.notes
 
     params[:note] = Hash.new
-    params[:note] = {:content=>"#{@date_time}: registration confirmation sent", 
-                     :note_type=>"general",
-                     :date_time=>@dat_time,
+    params[:note] = {:content=>"registration confirmation sent", 
+                     :note_type=>"confirmation",
+                     :date_time=>@date_time,
 		     :person_id=>@person.id} 
 
-render :text=>"tesit: #{params[:note]}"
-return
     note = Note.new(params[:note])
     @person.notes.push(note)
     @person.save

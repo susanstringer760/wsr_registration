@@ -2,6 +2,7 @@
 
 <table>
   <tr>
+    <th>Date</th>
     <th>Content</th>
     <th>Type</th>
     <th>Person</th>
@@ -12,6 +13,7 @@
 
 <% @filtered_notes.each do |note| %>
   <tr>
+    <td><%= note.date_time %></td>
     <td><%= note.content %></td>
     <td><%= note.note_type %></td>
     <td><%= @roommate_hash[note.person_id.to_s] %></td>
@@ -20,5 +22,7 @@
   </tr>
 <% end %>
 </table>
+<p></p>
+<%= link_to 'Back to list', people_path %>
 
 <br />
