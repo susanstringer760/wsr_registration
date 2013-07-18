@@ -32,9 +32,26 @@ class PeopleController < ApplicationController
 
     @column_names = Person.column_names
 
+
     @roommate1 = Person.get_roommate(@person.roommate_id1)
     @roommate2 = Person.get_roommate(@person.roommate_id2)
-    @note_hash = Person.get_notes(@person)
+
+
+    # get a hash of notes where key is note type
+    # and value is array note objects
+    notes = Person.get_notes(@person)
+
+    # get the paramaters to be diplayed
+    @notes_hash = Hash.new
+    @params = Array.new
+    @confirmation_flag = params[:confirmation]
+    if (@confirmation_flag.eql?('true'))
+      @notes_hash['confirmation'] = notes['confirmation']
+      @params = Person.show_confirmation(@person, @occupancy_by_id, @prices)
+    else
+      @notes_hash = notes
+      @params = Person.show_person(@person, @occupancy_by_id, @prices)
+    end
 
     respond_to do |format|
       format.html # show.html.erb
@@ -179,8 +196,7 @@ class PeopleController < ApplicationController
     #@note_hash = Person.get_notes(@person)
 #@note_hash = Hash.new
 
-    #PersonMailer.registration_confirmation(@person).deliver
-    PersonMailer.registration_confirmation(@person,@params, @roommate1, @roommate2).deliver
+    #PersonMailer.registration_confirmation(@person,@params, @roommate1, @roommate2).deliver
 
   end
 

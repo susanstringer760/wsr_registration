@@ -1,32 +1,26 @@
-<%= link_to 'Back to list', people_path %><br>
-<%= link_to 'Add note', new_person_note_path(:person_id=>@person.id) %><br>
-<%= link_to 'Edit', edit_person_path(@person) %>
-
-<% @person.attributes.each{|key, value| %>
-  <% next if (key.eql?('roommate_id1')) %>
-  <% next if (key.eql?('roommate_id2')) %>
-  <% if ( key.eql?('occupancy')) %>
-    <% value = @occupancy_by_id[value.to_s] %>
+<h3>Registration information for <%= @params[0][1] %></h3>
+<table border='1'>
+  <% @params.each do |p| %>
+    <% title = p[0] %>
+    <% value = p[1] %>
+    <tr>
+      <td><b><%= title %></b></td>
+      <td><%= value %></td>
+    </tr>
   <% end %>
-  <p><b><%= key %></b>: <%= value %></p>
-<% } %>
-<% if ( @person.occupancy > 1 ) %>
-  <p><b>Roommate 1: </b><%= @roommate1 %></p>
-<% end %>
-<% if ( @person.occupancy > 2 ) %>
-  <p><b>Roommate 2: </b><%= @roommate2 %></p>
-<% end %>
-
-<table border='0'>
-<% @note_hash.each do |note_type,note_arr| %>
-  <tr><td colspan='2'><b><%= note_type.capitalize %><br></b></td></tr>
-   <% note_arr.each do |note| %>
-      <tr><td><%= note.content %><br></td></tr>
-     <% end %>
+<p></p>
+<% @notes_hash.each { |key,value| %>
+  <tr>
+    <td><b><%= key.capitalize %></b></td>
+    <td>
+    <% value.each do |n| %>
+      <%= n.date_time %>:&nbsp;<%= n.content %><br>
+    <% end %>
+    </td>
   </tr>
-<% end %>
+<% } %>
 </table>
 
-<%= link_to 'Back to list', people_path %><br>
-<%= link_to 'Add note', new_person_note_path(:person_id=>@person.id) %></br>
-<%= link_to 'Edit', edit_person_path(@person) %>
+<% if (@confirmation_flag.eql?('true')) %>
+  <%= link_to 'Send confirmation', mail_confirmation_path(@person.id) %>
+<% end %>

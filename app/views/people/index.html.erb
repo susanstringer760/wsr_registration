@@ -19,13 +19,13 @@
   <tr>
     <% name = "#{person.first_name} #{person.last_name}" %>
     <td>
-    <%= link_to name, person_path(person.id) %>
+    <%= link_to name, person_path(:id=>person.id, :confirmation=>false) %>
     <%  if (person.occupancy > 1 ) %>
        <% id = person.roommate_id1 %>
        <% if (id == 0 ) %>
          <br>[<%= @roommate_hash[id.to_s] %>]
        <% else %>
-         <br>[<%= link_to @roommate_hash[id.to_s], person_path(id) %>]
+         <br>[<%= link_to @roommate_hash[id.to_s], person_path(:id=>person.id, :confirmation=>false) %>]
        <% end %>
     <% end %>
     <%  if (person.occupancy > 2) %>
@@ -33,7 +33,7 @@
        <% if (id == 0 ) %>
          <br>[<%= @roommate_hash[id.to_s] %>]
        <% else %>
-         <br>[<%= link_to @roommate_hash[id.to_s], person_path(id) %>]
+         <br>[<%= link_to @roommate_hash[id.to_s], person_path(:id=>person.id, :confirmation=>false) %>]
        <% end %>
     <% end %>
     </td>
@@ -47,11 +47,14 @@
     <% end %>
     <td><%= person.payment_status %></td>
     <td><%= person.registration_status %></td>
-    <td><%= link_to 'Show', person %><br>
+    <td><%= link_to "Show", person_path(:id=>person.id,:confirmation=>false) %><br>
     <%= link_to 'Edit', edit_person_path(person) %><br>
     <% destroy_msg = "Destroy #{person.first_name} #{person.last_name}?" %>
     <%= link_to 'Destroy', person, method: :delete, data: { confirm: destroy_msg } %></td>
+<!--
     <td><%= link_to 'Send confirmation', mail_confirmation_path(person.id) %></td>
+-->
+    <td><%= link_to "ssSend confirmation", person_path(:id=>person.id, :confirmation=>true) %><br>
     <td><%= link_to 'Add note', new_person_note_path(:person_id=>person.id) %>
     <td><%= link_to 'General notes', person_notes_path(:person_id=>person.id, :filter_by=>'general') %>
     <td><%= link_to 'Confirmation notes', person_notes_path(:person_id=>person.id, :filter_by=>'confirmation') %>

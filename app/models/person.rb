@@ -179,7 +179,106 @@ class Person < ActiveRecord::Base
 
    end
 
-   def self.get_confirmation(person, occupancy_by_id, prices)
+   def self.show_person(person, occupancy_by_id, prices)
+
+     params = Array.new
+     name = "#{person.first_name} #{person.last_name}"
+     params.push(['Name', name])
+
+     person.attributes.each {|key, value| 
+       next if (key.eql?('id'))
+       next if (key.eql?('first_name'))
+       next if (key.eql?('last_name'))
+       next if (key.eql?('roommate_id1')) 
+       next if (key.eql?('roommate_id2')) 
+       next if (key.eql?('updated_at'))
+       next if (key.eql?('created_at'))
+       next if (value.blank?) 
+
+       if ( key.eql?('occupancy')) 
+         value = occupancy_by_id[value.to_s] 
+       end 
+       param = [key.capitalize, value]
+       params.push(param)
+     } 
+
+     # roommate info
+     roommate1 = Person.get_roommate(person.roommate_id1)
+     roommate2 = Person.get_roommate(person.roommate_id2)
+     if ( person.occupancy > 1 ) 
+       params.push(["Roommate",roommate1])
+     end 
+     if ( person.occupancy > 2 ) 
+       params.push(["Roommate",roommate2])
+     end 
+
+     params
+
+   end
+
+   def self.show_confirmation(person, occupancy_by_id, prices)
+
+     # get the confirmation information
+     params = Array.new
+     name = "#{person.first_name} #{person.last_name}"
+     email = person.email
+     phone = person.phone
+     total_due = prices[person.occupancy]
+     registration_status = person.registration_status
+     payment_status = person.payment_status
+     payment_type = person.payment_type
+     scholarship_amount = person.scholarship_amount
+     scholarship_donation = person.scholarship_donation
+     paid_amount = person.paid_amount
+     balance_due = person.balance_due
+     occupancy = occupancy_by_id[person.occupancy.to_s]
+     check_number = person.check_num
+     can_drive_num = person.can_drive_num
+     needs_ride = person.needs_ride
+     wait_list_num = person.wait_list_num
+     roommate_id1 = person.roommate_id1 
+     roommate_id2 = person.roommate_id2 
+   
+     if (roommate_id1 > 0 )
+       first_name = Person.find(roommate_id1).first_name
+       last_name = Person.find(roommate_id1).last_name
+       roommate1 = "#{first_name} #{last_name}"
+     else 
+       roommate1 = 'TBD'
+     end
+     if (roommate_id2 > 0 )
+       first_name = Person.find(roommate_id2).first_name
+       last_name = Person.find(roommate_id2).last_name
+       roommate2 = "#{first_name} #{last_name}"
+     else 
+       roommate2 = 'TBD'
+     end
+
+     # stuff the necessary parameters into an array 
+     params.push(["Name", name.to_s]);
+     params.push(["Phone", phone.to_s]);
+     params.push(["Registration status",  registration_status.to_s]);
+     params.push(["Payment status",  payment_status.to_s]);
+     params.push(["Total due",  to_currency(total_due).to_s]);
+     params.push(["Paid",  to_currency(paid_amount).to_s]);
+     params.push(["Balance due",  to_currency(balance_due).to_s]);
+     params.push(["Payment type",  payment_type.to_s]) if (balance_due == 0)
+     if ( (!check_number.blank?) && (payment_type.eql?('check')) )
+       params.push(["Check number",  check_number.to_s])
+     end
+     params.push(["Scholarship amount",  to_currency(scholarship_amount).to_s]) if (scholarship_amount > 0)
+     params.push(["Scholarship donation ",  to_currency(scholarship_donation).to_s]) if (scholarship_donation > 0)
+     params.push(["Occupancy",  occupancy.to_s]);
+     params.push(["Roommate 1",  roommate1.to_s]) if (person.occupancy > 1);
+     params.push(["Roommate 2",  roommate2.to_s]) if (person.occupancy > 2);
+     params.push(["Can drive number",  can_drive_num.to_s]) if (!can_drive_num.blank?)
+     params.push(["Needs ride",  needs_ride.to_s]) if (!needs_ride.blank?)
+
+     params
+
+   end
+
+   def self.sshow_confirmation(person, occupancy_by_id, prices)
 
      # get the confirmation information
      params = Array.new
