@@ -54,7 +54,7 @@
 <!--
     <td><%= link_to 'Send confirmation', mail_confirmation_path(person.id) %></td>
 -->
-    <td><%= link_to "ssSend confirmation", person_path(:id=>person.id, :confirmation=>true) %><br>
+    <td><%= link_to "Send confirmation", person_path(:id=>person.id, :confirmation=>true) %><br>
     <td><%= link_to 'Add note', new_person_note_path(:person_id=>person.id) %>
     <td><%= link_to 'General notes', person_notes_path(:person_id=>person.id, :filter_by=>'general') %>
     <td><%= link_to 'Confirmation notes', person_notes_path(:person_id=>person.id, :filter_by=>'confirmation') %>

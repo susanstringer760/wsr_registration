@@ -163,7 +163,30 @@ class PeopleController < ApplicationController
     end
   end
 
-  def confirmation
+  def confirmation 
+
+    # send confirmation email
+    @person = Person.find(params[:id])
+    @roommates  = Person.roommate_list(@person.id)
+
+    @roommate1 = Person.get_roommate(@person.roommate_id1)
+    @roommate2 = Person.get_roommate(@person.roommate_id2)
+
+    # get a hash of notes where key is note type
+    # and value is array note objects
+    notes = Person.get_notes(@person)
+
+    # get the paramaters to be diplayed
+    @notes_hash = Hash.new
+    @params = Array.new
+    @notes_hash['confirmation'] = notes['confirmation']
+    @params = Person.show_confirmation(@person, @occupancy_by_id, @prices)
+
+    PersonMailer.registration_confirmation(@person,@params,@notes_hash).deliver
+
+  end
+
+  def xxconfirmation
 
     # send confirmation email
     #@person = Person.find(params[:id])
@@ -180,7 +203,7 @@ class PeopleController < ApplicationController
 
     params[:note] = Hash.new
     params[:note] = {:content=>"registration confirmation sent", 
-                     :note_type=>"confirmation",
+                     :note_type=>"email_log",
                      :date_time=>@date_time,
 		     :person_id=>@person.id} 
 
@@ -190,13 +213,13 @@ class PeopleController < ApplicationController
 
     
     #params = {:content=>#{@date_time: registration confirmation sent", :note_type=>"general"}}
-    @params = Person.get_confirmation(@person, @occupancy_by_id, @prices)
+    @params = Person.show_confirmation(@person, @occupancy_by_id, @prices)
     @roommate1 = Person.get_roommate(@person.roommate_id1)
     @roommate2 = Person.get_roommate(@person.roommate_id2)
     #@note_hash = Person.get_notes(@person)
 #@note_hash = Hash.new
 
-    #PersonMailer.registration_confirmation(@person,@params, @roommate1, @roommate2).deliver
+    PersonMailer.registration_confirmation(@person,@params, @roommate1, @roommate2).deliver
 
   end
 
@@ -223,38 +246,47 @@ class PeopleController < ApplicationController
 
   def report 
 
-    csv_file = "/Users/snorman/Rails/registration/notes/report.out"
-    f = File.new(csv_file, 'w')
+    #csv_file = "/Users/snorman/Rails/registration/notes/report.out"
+    #f = File.new(csv_file, 'w')
     #header = "Name;Status;Paid;Balance;Notes"
-    header = "Name;Status;Paid;Balance"
-    f.puts(header)
+    #header = "Name;Status;Paid;Balance"
+    #f.puts(header)
     #sort_by = 'registration_status'
     sort_by = 'last_name'
     @people = Person.sort_by(sort_by) 
     @date_time = DateTime.now.strftime("%F %T")
 
     @arr = Array.new
-    total_due = to_currency(Person.sum('total_due'))
-    total_paid = to_currency(Person.sum('paid_amount'))
+    total_due = to_currency(Person.sum('total_due') - @facilitator_deduction)
+    total_paid = to_currency(Person.sum('paid_amount') - @facilitator_deduction)
     total_balance_due = to_currency(Person.sum('balance_due'))
-    total_scholarship_amount = to_currency(Person.sum('scholarship_donation'))
+    available_scholarship = to_currency(@initial_scholarship + Person.sum('scholarship_donation'))
     total_scholarship_given = to_currency(Person.sum('scholarship_amount'))
+    total_registered = Person.all.length
+    registered_pending_count = Person.get_count('registration_status', 'pending')
+    registered_paid_count = Person.get_count('registration_status', 'registered')
+    registered_hold_count = Person.get_count('registration_status', 'hold')
+
     #total_paid = to_currency(Person.get_column_total('paid_amount', 'payment_status', 'paid'))
     #total_balance_due = Person.get_column_total('balance_due', 'payment_status', 'pending')
-    total_registered = Person.all.length
-    registered_pending_count = Person.get_count('payment_status', 'pending')
-    registered_paid_count = Person.get_count('payment_status', 'paid')
+    #total_scholarship_amount = to_currency(Person.sum('scholarship_donation'))
+    #registered_pending_count = Person.get_count('payment_status', 'pending')
+    #registered_paid_count = Person.get_count('payment_status', 'paid')
+
     #@arr.push("Registration totals")
     @arr.push("Total due: #{total_due}")
     @arr.push("Total paid: #{total_paid}")
     @arr.push("Total balance due: #{total_balance_due}")
+    @arr.push("Total available scholarships: #{available_scholarship}")
     @arr.push("Total scholarship given: #{total_scholarship_given}")
-    @arr.push("Total scholarship donated: #{total_scholarship_amount}")
     @arr.push("Total registered: #{total_registered}")
     @arr.push("Total registered(pending): #{registered_pending_count}")
     @arr.push("Total registered(paid): #{registered_paid_count}")
+    @arr.push("Total registered(hold): #{registered_hold_count}")
     @arr.push("******************************")
     @people.each do |p|
+      next if (p.last_name.eql?('Vielbig'))
+      next if (p.last_name.eql?('Bruni'))
       @arr.push("#{p.first_name} #{p.last_name}")
       @arr.push("Registration status: #{p.registration_status}")
       @arr.push("Paid amount: #{p.paid_amount}")
@@ -266,13 +298,13 @@ class PeopleController < ApplicationController
       @arr.push("--------------------")
     end
     str = ''
-    @arr.each do |stat|
-      f.puts(stat)
-    end
+    #@arr.each do |stat|
+    #  f.puts(stat)
+    # end
 
     PersonMailer.registration_report(@email_list,@arr).deliver
 
-    f.close
+    #f.close
 
   end
 

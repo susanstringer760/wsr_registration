@@ -3,12 +3,14 @@ class PersonMailer < ActionMailer::Base
   #default from: "from@example.com"
   default :from => "susanstringer760@comcast.net"
 
-  def registration_confirmation(person, params, roommate1, roommate2)
+  #def registration_confirmation(person, params, roommate1, roommate2)
+  def registration_confirmation(person, params,notes_hash)
 
      @person = person
      @params = params
-     @roommate1 = roommate1
-     @roommate2 = roommate2
+     @notes_hash = notes_hash
+     #@roommate1 = roommate1
+     #@roommate2 = roommate2
 
      mail(:to=> @person.email, :subject => "WSR Confirmation")
 

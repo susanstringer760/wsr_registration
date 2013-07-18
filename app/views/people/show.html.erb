@@ -20,7 +20,11 @@
   </tr>
 <% } %>
 </table>
+<p></p>
+<%= link_to 'Back to list', people_path %>
 
 <% if (@confirmation_flag.eql?('true')) %>
+  <p></p>
   <%= link_to 'Send confirmation', mail_confirmation_path(@person.id) %>
 <% end %>
+

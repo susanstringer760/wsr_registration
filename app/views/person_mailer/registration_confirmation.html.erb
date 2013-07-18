@@ -3,9 +3,14 @@ Hi <%= @person.first_name %>,
 Thank you for registering for the 2013 Women's Spiritual Retreat. This is a confirmation of your registration status. Please review the information below and let me know if there are any changes.
 <p></p>
 <% @params.each do |p| %>
-  <%= p %><br>
+  <% title = p[0] %>
+  <% value = p[1] %>
+  <%= title %>: <%= value %>
 <% end %>
 <p></p>
+Notes:
+<% arr = @notes_hash['confirmation'] %>
+<%= arr.length %>
 
 <% if ( (@person.needs_ride.blank?) && (@person.can_drive_num.blank?) ) %>
 The retreat will be held at the YMCA of the Rockies in Estes Park.  If you are interested in participating in a carpool, please send me an email and indicate if you can drive (and number of occupants) or if you need a ride.
