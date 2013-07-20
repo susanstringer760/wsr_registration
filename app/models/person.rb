@@ -96,6 +96,7 @@ class Person < ActiveRecord::Base
      # set the new values
      if ( balance_due < 0 )
        params[:scholarship_donation] = balance_due.abs 
+       balance_due = 0
      end
      params[:balance_due] = balance_due.to_f
      params[:payment_status] = payment_status

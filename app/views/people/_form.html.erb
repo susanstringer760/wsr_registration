@@ -52,7 +52,11 @@
   </tr>
   <tr>
     <td><b>Payment type:</b></td>
-    <td><%= f.select(:payment_type, payment_type_list, {:selected=>'None'} ) %></td>
+    <% if caller.eql?('edit') %>
+      <td><%= f.select(:payment_type, payment_type_list, {:selected=>@person.payment_type} ) %></td>
+    <% else %>
+      <td><%= f.select(:payment_type, payment_type_list, {:selected=>'None'} ) %></td>
+    <% end %>
   </tr>
   <tr>
     <td><b>Check Number:</b></td>
