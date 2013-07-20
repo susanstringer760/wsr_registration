@@ -465,6 +465,18 @@ class Person < ActiveRecord::Base
     
   end
 
+  def self.get_email_log(person_id)
+
+    # create a note to log the confirmation email
+    email_log_note = Note.new(:date_time=>Time.now, :content=>'confirmation sent', :person_id=>person_id, :note_type=>'email_log')
+
+    # add the note to the person
+    return email_log_note
+
+  end
+
+
+
 #  def self.get_roommate(id)
 #
 #    #person_id = person.id

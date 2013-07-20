@@ -1,4 +1,4 @@
-<% note_type_list = {'Confirmation'=>'confirmation','General'=>'general'} %>
+<% note_type_list = {'Confirmation'=>'confirmation','General'=>'general', 'Email log'=>'email_log'} %>
 <%= form_for(@note) do |f| %>
   <% if @note.errors.any? %>
     <div id="error_explanation">

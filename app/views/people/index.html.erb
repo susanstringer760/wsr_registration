@@ -12,7 +12,8 @@
     <th><%= link_to 'Balance due', people_path(:sort_by=>'balance_due') %></th>
     <th><%= link_to 'Payment status', people_path(:sort_by=>'payment_status') %></th>
     <th><%= link_to 'Registration status', people_path(:sort_by=>'registration_status') %></th>
-    <th colspan='6'>Actions</th>
+    <th>Confirm</th>
+    <th>Notes</th>
   </tr>
 
 <% @people.each do |person| %>
@@ -47,18 +48,12 @@
     <% end %>
     <td><%= person.payment_status %></td>
     <td><%= person.registration_status %></td>
-    <td><%= link_to "Show", person_path(:id=>person.id,:confirmation=>false) %><br>
+    <td><%= link_to "Send confirmation", person_path(:id=>person.id, :confirmation=>true) %><br>
+    <td><%= link_to 'Add note', new_person_note_path(:person_id=>person.id) %><br>
+    <%= link_to "Show", person_path(:id=>person.id,:confirmation=>false) %><br>
     <%= link_to 'Edit', edit_person_path(person) %><br>
     <% destroy_msg = "Destroy #{person.first_name} #{person.last_name}?" %>
     <%= link_to 'Destroy', person, method: :delete, data: { confirm: destroy_msg } %></td>
-<!--
-    <td><%= link_to 'Send confirmation', mail_confirmation_path(person.id) %></td>
--->
-    <td><%= link_to "Send confirmation", person_path(:id=>person.id, :confirmation=>true) %><br>
-    <td><%= link_to 'Add note', new_person_note_path(:person_id=>person.id) %>
-    <td><%= link_to 'General notes', person_notes_path(:person_id=>person.id, :filter_by=>'general') %>
-    <td><%= link_to 'Confirmation notes', person_notes_path(:person_id=>person.id, :filter_by=>'confirmation') %>
-    <td><%= link_to 'All notes', person_notes_path(:person_id=>person.id, :filter_by=>'all') %>
   </tr>
 <% end %>
 </table>

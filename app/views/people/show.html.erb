@@ -9,7 +9,9 @@
     </tr>
   <% end %>
 <p></p>
+<tr><td colspan=2><b>Notes<b></td></tr>
 <% @notes_hash.each { |key,value| %>
+  <%  next if value.empty? %>
   <tr>
     <td><b><%= key.capitalize %></b></td>
     <td>
