@@ -381,7 +381,7 @@ class Person < ActiveRecord::Base
 
   end
 
-  def self.get_notes(person,column,value)
+  def self.xxget_notes(person,column,value)
 
     # return a string containing the notes
 

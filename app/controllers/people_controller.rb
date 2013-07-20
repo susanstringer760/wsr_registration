@@ -32,10 +32,8 @@ class PeopleController < ApplicationController
 
     @column_names = Person.column_names
 
-
     @roommate1 = Person.get_roommate(@person.roommate_id1)
     @roommate2 = Person.get_roommate(@person.roommate_id2)
-
 
     # get a hash of notes where key is note type
     # and value is array note objects
@@ -46,8 +44,13 @@ class PeopleController < ApplicationController
     @params = Array.new
     @confirmation_flag = params[:confirmation]
     if (@confirmation_flag.eql?('true'))
-      @notes_hash['confirmation'] = notes['confirmation']
+      notes['confirmation'].nil? ?
+        @notes_hash['confirmation'] = {} :
+        @notes_hash['confirmation'] = notes['confirmation']
       @params = Person.show_confirmation(@person, @occupancy_by_id, @prices)
+      #render :text =>"asdaf: #{@notes_hash} and #{@params}"
+      #return
+      #PersonMailer.registration_confirmation(@person,@params,@notes_hash).deliver
     else
       @notes_hash = notes
       @params = Person.show_person(@person, @occupancy_by_id, @prices)

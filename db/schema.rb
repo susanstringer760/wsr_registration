@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130715140857) do
+ActiveRecord::Schema.define(:version => 20130720040929) do
 
   create_table "notes", :force => true do |t|
     t.datetime "date_time"
@@ -33,11 +33,10 @@ ActiveRecord::Schema.define(:version => 20130715140857) do
     t.string   "payment_type"
     t.string   "payment_status"
     t.string   "registration_status"
-    t.float    "paid_amount",          :default => 0.0
-    t.float    "scholarship_amount",   :default => 0.0
-    t.float    "scholarship_donation", :default => 0.0
-    t.float    "balance_due",          :default => 0.0
-    t.float    "total_due",            :default => 0.0
+    t.float    "paid_amount"
+    t.float    "scholarship_amount"
+    t.float    "scholarship_donation"
+    t.float    "balance_due"
     t.integer  "occupancy"
     t.integer  "check_num"
     t.integer  "can_drive_num"
@@ -50,6 +49,7 @@ ActiveRecord::Schema.define(:version => 20130715140857) do
     t.date     "due_date"
     t.datetime "created_at",                            :null => false
     t.datetime "updated_at",                            :null => false
+    t.float    "total_due",            :default => 0.0
   end
 
 end

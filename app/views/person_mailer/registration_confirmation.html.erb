@@ -5,13 +5,18 @@ Thank you for registering for the 2013 Women's Spiritual Retreat. This is a conf
 <% @params.each do |p| %>
   <% title = p[0] %>
   <% value = p[1] %>
-  <%= title %>: <%= value %>
+  <%= title %>: <%= value %><br>
 <% end %>
 <p></p>
-Notes:
-<% arr = @notes_hash['confirmation'] %>
-<%= arr.length %>
-
+<% if !@notes_hash['confirmation'].nil? %>
+  Notes:<br>
+  <% @notes_hash.each do |key,notes_arr| %> 
+   <% notes_arr.each do |note| %>
+     <%= note.date_time %>: <%= note.content %><br>
+   <% end %>
+  <% end %>
+<% end %>
+<p></p>
 <% if ( (@person.needs_ride.blank?) && (@person.can_drive_num.blank?) ) %>
 The retreat will be held at the YMCA of the Rockies in Estes Park.  If you are interested in participating in a carpool, please send me an email and indicate if you can drive (and number of occupants) or if you need a ride.
 <% end %>
