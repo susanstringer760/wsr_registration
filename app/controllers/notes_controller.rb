@@ -97,11 +97,13 @@ class NotesController < ApplicationController
   # DELETE /notes/1
   # DELETE /notes/1.json
   def destroy
+
     @note = Note.find(params[:id])
     @note.destroy
 
     respond_to do |format|
-      format.html { redirect_to notes_url }
+      #format.html { redirect_to notes_url }
+      format.html { redirect_to edit_person_path(:id=>@note.person_id) }
       format.json { head :no_content }
     end
   end

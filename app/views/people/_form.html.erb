@@ -130,7 +130,10 @@
     <% @note_hash.each do |key,value| %>
       <% value.each do |note_type | %>
         <tr>
-	  <td><b><%= link_to key.capitalize, edit_person_note_path(:person_id=>@person.id, :id=>note_type.id) %></td>
+	  <td>
+            <b><%= link_to key.capitalize, edit_person_note_path(:person_id=>@person.id, :id=>note_type.id) %></b>&nbsp;
+[<%= link_to 'Destroy', note_path(:id=>note_type.id,:person_id=>note_type.person_id), method: :delete, data: { confirm: 'Are you sure?' } %>]
+          </td>
           <td><%= note_type.content  %></td>
 	</tr>
       <% end %>
