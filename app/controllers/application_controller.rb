@@ -12,9 +12,9 @@ class ApplicationController < ActionController::Base
 
     # room rates
     @prices = Hash.new
-    @prices[1] = 364 
-    @prices[2] = 235 
-    @prices[3] = 195 
+    @prices[1] = 364.00
+    @prices[2] = 235.00 
+    @prices[3] = 195.00 
 
     # occupancy mapping
     @occupancy_by_id = {'1'=>'Single','2'=>'Double', '3'=>'Triple' }

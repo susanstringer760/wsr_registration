@@ -15,7 +15,8 @@ class PersonMailer < ActionMailer::Base
 
 
      #mail(:to=> @person.email, :subject => "WSR Confirmation")
-     mail(:to=> @person.email, :cc=>cc_to, :subject => "WSR Confirmation")
+     #mail(:to=> @person.email, :cc=>cc_to, :subject => "WSR Confirmation")
+     mail(:to=> @person.email, :cc=>cc_to, :subject => "WSR Confirmation for #{@person.first_name} #{@person.last_name}")
 
   end
 
@@ -27,17 +28,5 @@ class PersonMailer < ActionMailer::Base
      mail(:to=> @email_list, :subject => "WSR Stats")
 
   end
-
-
-
-  def rregistration_confirmation(person)
-
-     @person = person
-
-     #mail(:to=> @person.email, :subject => "WSR Confirmation")
-     #mail(:to => "#{person.first_name} <#{person.email}>", :subject => "Registered")
-
-  end
-
 
 end
