@@ -185,7 +185,7 @@ class PeopleController < ApplicationController
     @params = Person.show_confirmation(@person, @occupancy_by_id, @prices)
 
     # add email log note
-    email_log_note = Person.get_email_log(@person.id)
+    email_log_note = Person.generate_email_log(@person.id)
     @person.notes.push(email_log_note)
 
   end
@@ -232,6 +232,18 @@ class PeopleController < ApplicationController
     person_hash = Hash.new
     person_hash['first_name'] = person.first_name
     return person_hash
+
+  end
+
+  def show_email_log
+
+    @people = Person.find(:all)
+
+    @email_logs_arr = Array.new
+    @people.each do |p|
+      note_hash = Person.get_email_log(p)
+      @email_logs_arr.push(note_hash)
+    end
 
   end
 

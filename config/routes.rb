@@ -9,6 +9,7 @@ WsrRegistration::Application.routes.draw do
   match 'people/:id/confirmation' => 'people#confirmation', :as=>'mail_confirmation'
   match 'people/all/report' => 'people#report', :as=>'generate_report'
   match 'people/:id/test_template' => 'people#test_template', :as=>'test_template'
+  match 'people/all/show_email_log' => 'people#show_email_log', :as=>'email_log'
 
   resources :people do
     resources :notes

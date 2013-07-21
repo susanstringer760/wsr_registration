@@ -263,10 +263,10 @@ class Person < ActiveRecord::Base
      params.push(["Total due",  to_currency(total_due).to_s]);
      params.push(["Paid",  to_currency(paid_amount).to_s]);
      params.push(["Balance due",  to_currency(balance_due).to_s]);
-     params.push(["Payment type",  payment_type.to_s]) if (balance_due == 0)
-     if ( (!check_number.blank?) && (payment_type.eql?('check')) )
-       params.push(["Check number",  check_number.to_s])
-     end
+     #params.push(["Payment type",  payment_type.to_s]) if (balance_due == 0)
+     #if ( (!check_number.blank?) && (payment_type.eql?('check')) )
+     #  params.push(["Check number",  check_number.to_s])
+     #end
      params.push(["Scholarship amount",  to_currency(scholarship_amount).to_s]) if (scholarship_amount > 0)
      params.push(["Scholarship donation ",  to_currency(scholarship_donation).to_s]) if (scholarship_donation > 0)
      params.push(["Occupancy",  occupancy.to_s]);
@@ -466,7 +466,22 @@ class Person < ActiveRecord::Base
     
   end
 
-  def self.get_email_log(person_id)
+  def self.get_email_log(person)
+
+    # return a hash where the key is the
+    # person name and value is array of
+    # email log notes
+    note_hash = Hash.new
+    key = "#{person.first_name} #{person.last_name}"
+    note_hash[key] = Note.find(:all,:conditions => ["person_id= ? AND note_type= ?", person.id, "email_log"])
+    #note_hash[person.id] = Note.find(:all,:conditions => ["person_id= ? AND note_type= ?", person.id, "email_log"])
+
+    return note_hash
+
+
+  end
+
+  def self.generate_email_log(person_id)
 
     # create a note to log the confirmation email
     email_log_note = Note.new(:date_time=>Time.now, :content=>'confirmation sent', :person_id=>person_id, :note_type=>'email_log')

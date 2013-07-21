@@ -1,5 +1,6 @@
 <%= link_to 'New Person', new_person_path %><br>
-<%= link_to 'Registration stats', generate_report_path %>
+<%= link_to 'Registration stats', generate_report_path %><br>
+<%= link_to 'Email log', email_log_path %>
 
 <h1>Listing people</h1>
 
@@ -13,7 +14,7 @@
     <th><%= link_to 'Payment status', people_path(:sort_by=>'payment_status') %></th>
     <th><%= link_to 'Registration status', people_path(:sort_by=>'registration_status') %></th>
     <th>Confirm</th>
-    <th>Notes</th>
+    <th>Actions</th>
   </tr>
 
 <% @people.each do |person| %>
