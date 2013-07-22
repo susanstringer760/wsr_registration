@@ -16,7 +16,7 @@ class PersonMailer < ActionMailer::Base
 
      #mail(:to=> @person.email, :subject => "WSR Confirmation")
      #mail(:to=> @person.email, :cc=>cc_to, :subject => "WSR Confirmation")
-     mail(:to=> @person.email, :cc=>cc_to, :subject => "WSR Confirmation for #{@person.first_name} #{@person.last_name}")
+     mail(:to=> @person.email, :cc=>"susanstringer760@comcast.net", :subject => "WSR Confirmation for #{@person.first_name} #{@person.last_name}")
 
   end
 

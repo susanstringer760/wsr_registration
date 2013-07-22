@@ -48,9 +48,7 @@ class PeopleController < ApplicationController
         @notes_hash['confirmation'] = {} :
         @notes_hash['confirmation'] = notes['confirmation']
         @params = Person.show_confirmation(@person, @occupancy_by_id, @prices)
-      #render :text =>"asdaf: #{@notes_hash} and #{@params}"
-      #return
-      PersonMailer.registration_confirmation(@person,@params,@notes_hash).deliver
+      #PersonMailer.registration_confirmation(@person,@params,@notes_hash).deliver
     else
       @notes_hash = notes
       @params = Person.show_person(@person, @occupancy_by_id, @prices)
@@ -183,6 +181,8 @@ class PeopleController < ApplicationController
     @params = Array.new
     @notes_hash['confirmation'] = notes['confirmation']
     @params = Person.show_confirmation(@person, @occupancy_by_id, @prices)
+
+    PersonMailer.registration_confirmation(@person,@params,@notes_hash).deliver
 
     # add email log note
     email_log_note = Person.generate_email_log(@person.id)

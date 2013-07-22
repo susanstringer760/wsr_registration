@@ -1,4 +1,5 @@
 <h3>Registration information for <%= @params[0][1] %></h3>
+<b>Email: <%= @person.email %></b>
 <table border='0'>
   <% @params.each do |p| %>
     <% title = p[0] %>
@@ -23,7 +24,8 @@
 <% } %>
 </table>
 <p></p>
-<%= link_to 'Back to list', people_path %>
+<%= link_to 'Back to list', people_path %><br>
+<%= link_to 'Edit', edit_person_path(@person) %>
 
 <% if (@confirmation_flag.eql?('true')) %>
   <p></p>
