@@ -260,7 +260,29 @@ class PeopleController < ApplicationController
 
   end
 
-  def report 
+  def report
+
+   report_type = params[:report_type]
+
+   if (report_type.eql?('roommate'))
+    date_time = Time.now.strftime("%Y%m%d_%H%M") 
+    fname = "roommate_report.#{date_time}.csv"
+    #full_path = Rails.root.join('reports', fname)
+    full_path = Rails.root.join('reports', 'roommates.csv')
+    Person.create_roommate_info(full_path, @occupancy_by_id)
+   end
+
+   if (report_type.eql?('stats'))
+     # generate status report
+     @date_time = DateTime.now.strftime("%F %T")
+     @arr = Person.report(@facilitators, @initial_scholarship)
+     @msg = "Report sent to: #{@email_list}"
+     PersonMailer.registration_report(@email_list,@arr).deliver
+   end
+
+  end
+
+  def xxreport 
 
     #csv_file = "/Users/snorman/Rails/registration/notes/report.out"
     #f = File.new(csv_file, 'w')

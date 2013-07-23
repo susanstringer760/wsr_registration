@@ -382,6 +382,93 @@ class Person < ActiveRecord::Base
 
   end
 
+  def self.create_roommate_info(csv_fname, occupancy_hash)
+
+    # get a list of people
+    sort_by = 'last_name'
+    people = self.sort_by(sort_by)
+    f = File.new(csv_fname, 'w')
+    header = "Name;Email;Phone;Occupancy;Payment status;Roommate1;Roommate2";
+    f.puts(header)
+
+    people.each do |p|
+       info = Array.new
+      info.push("#{p.first_name} #{p.last_name}")
+      info.push(p.email)
+      info.push(p.phone)
+      occupancy = occupancy_hash[p.occupancy.to_s]
+      info.push(occupancy)
+      info.push(p.payment_status)
+      info.push(self.get_roommate(p.roommate_id1))
+      info.push(self.get_roommate(p.roommate_id2))
+      str = info.join(';')
+      f.puts(str)
+    end
+
+    f.close
+
+    return
+
+
+  end
+
+  def self.report(facilitators, initial_scholarship)
+
+    sort_by = 'last_name'
+    # get a list of people
+    people = self.sort_by(sort_by)
+
+    # amount to deduct for facilitators
+    facilitator_deduction = 0
+    facilitators.each do |f|
+      facilitator_deduction += f.total_due
+    end
+
+    total_due = to_currency(self.sum('total_due') - facilitator_deduction)
+    total_paid = to_currency(self.sum('paid_amount') - facilitator_deduction)
+    total_balance_due = to_currency(self.sum('balance_due'))
+    available_scholarship = to_currency(initial_scholarship + self.sum('scholarship_donation'))
+    total_scholarship_given = to_currency(self.sum('scholarship_amount'))
+    total_registered = Person.all.length
+    registered_pending_count = self.get_count('registration_status', 'pending')
+    registered_paid_count = self.get_count('registration_status', 'registered')
+    registered_hold_count = self.get_count('registration_status', 'hold')
+
+    arr = Array.new
+    arr.push("Total due: #{total_due}")
+    arr.push("Total paid: #{total_paid}")
+    arr.push("Total balance due: #{total_balance_due}")
+    arr.push("Total available scholarships: #{available_scholarship}")
+    arr.push("Total scholarship given: #{total_scholarship_given}")
+    arr.push("Total registered: #{total_registered}")
+    arr.push("Total registered(pending): #{registered_pending_count}")
+    arr.push("Total registered(paid): #{registered_paid_count}")
+    arr.push("Total registered(hold): #{registered_hold_count}")
+    arr.push("******************************")
+    people.each do |p|
+    facilitators
+      next if (p.last_name.eql?(facilitators[0].last_name))
+      next if (p.last_name.eql?(facilitators[1].last_name))
+      #next if (p.last_name.eql?('Vielbig'))
+      #next if (p.last_name.eql?('Bruni'))
+      arr.push("#{p.first_name} #{p.last_name}")
+      arr.push("Registration status: #{p.registration_status}")
+      arr.push("Paid amount: #{p.paid_amount}")
+      if ( p.balance_due < 0 )
+        arr.push("Donation: #{p.balance_due.abs}")
+      else
+        arr.push("Balance due: #{p.balance_due}")
+      end
+      arr.push("--------------------")
+    end
+
+    arr
+
+
+
+  end
+
+
   def self.xxget_notes(person,column,value)
 
     # return a string containing the notes

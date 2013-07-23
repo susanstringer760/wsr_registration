@@ -1,5 +1,6 @@
 <%= link_to 'New Person', new_person_path %><br>
-<%= link_to 'Registration stats', generate_report_path %><br>
+<%= link_to 'Registration stats', generate_report_path(:report_type=>'stats') %><br>
+<%= link_to 'Create roommate report', generate_report_path(:report_type=>'roommate') %><br>
 <%= link_to 'Email log', email_log_path %>
 
 <h1>Listing people</h1>
