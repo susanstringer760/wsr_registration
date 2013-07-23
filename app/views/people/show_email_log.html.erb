@@ -1,0 +1,27 @@
+<h3>List of email logs</h3>
+<%= link_to 'Back to list', people_path %>
+<p></p>
+<table border='1'>
+<% @email_logs_arr.each do |log| %>
+  <% log.each do |name,note_arr| %>
+    <tr>
+      <% if note_arr.length <= 0  %>
+        <td bgcolor='red' colspan='2'><b><%= name %></b>
+      <% else %>
+        <td colspan='2'><b><%= name %></b>
+      <% end %>
+    </td>
+    </tr>
+    <tr>
+      <% next if note_arr.length <= 0 %>
+      <td>
+        <% note_arr.each do |note| %>
+	  <%= note.date_time %>: <%= note.content %><br>
+        <% end %>
+      </td>
+    </tr>
+  <% end %>
+<% end %>
+</table>
+<p></p>
+<%= link_to 'Back to list', people_path %>
