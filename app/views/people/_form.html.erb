@@ -117,7 +117,7 @@
   <tr>
     <td><b>Roommate 1:</b></td>
     <% if caller.eql?('new') %>
-      <td><%= f.select :roommate_id1, @roommates ,{:selected=>'NONE'} %>
+      <td><%= f.select :roommate_id1, @roommates ,{:selected=>'TBD'} %>
     <% else %>
       <td><%= f.select :roommate_id1, @roommates %>
      <% end %>
@@ -125,7 +125,7 @@
   <tr>
     <td><b>Roommate 2:</b></td>
     <% if caller.eql?('new') %>
-      <td><%= f.select :roommate_id2, @roommates ,{:selected=>'NONE'} %>
+      <td><%= f.select :roommate_id2, @roommates ,{:selected=>'TBD'} %>
     <% else %>
       <td><%= f.select :roommate_id2, @roommates %>
      <% end %>

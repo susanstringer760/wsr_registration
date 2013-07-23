@@ -266,10 +266,10 @@ class PeopleController < ApplicationController
 
    if (report_type.eql?('roommate'))
     date_time = Time.now.strftime("%Y%m%d_%H%M") 
+    #fname = "roommates.csv"
     fname = "roommate_report.#{date_time}.csv"
-    #full_path = Rails.root.join('reports', fname)
-    full_path = Rails.root.join('reports', 'roommates.csv')
-    Person.create_roommate_info(full_path, @occupancy_by_id)
+    full_path = Rails.root.join('reports', fname)
+    Person.create_roommate_report(full_path, @occupancy_by_id)
    end
 
    if (report_type.eql?('stats'))

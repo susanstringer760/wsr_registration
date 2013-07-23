@@ -207,10 +207,10 @@ class Person < ActiveRecord::Base
      roommate1 = Person.get_roommate(person.roommate_id1)
      roommate2 = Person.get_roommate(person.roommate_id2)
      if ( person.occupancy > 1 ) 
-       params.push(["Roommate",roommate1])
+       params.push(["Roommate 1",roommate1])
      end 
      if ( person.occupancy > 2 ) 
-       params.push(["Roommate",roommate2])
+       params.push(["Roommate 2",roommate2])
      end 
 
      params
@@ -382,26 +382,45 @@ class Person < ActiveRecord::Base
 
   end
 
-  def self.create_roommate_info(csv_fname, occupancy_hash)
+  def self.create_roommate_report(csv_fname, occupancy_hash)
 
     # get a list of people
     sort_by = 'last_name'
     people = self.sort_by(sort_by)
     f = File.new(csv_fname, 'w')
-    header = "Name;Email;Phone;Occupancy;Payment status;Roommate1;Roommate2";
+    header = "Name,Email,Phone,Occupancy,Payment status,Roommate1,Roommate2"
     f.puts(header)
 
+    # print out the rooomate info for each person
     people.each do |p|
-       info = Array.new
+      info = Array.new
+      # name
       info.push("#{p.first_name} #{p.last_name}")
+      # email
       info.push(p.email)
+      # phone
       info.push(p.phone)
       occupancy = occupancy_hash[p.occupancy.to_s]
       info.push(occupancy)
       info.push(p.payment_status)
-      info.push(self.get_roommate(p.roommate_id1))
-      info.push(self.get_roommate(p.roommate_id2))
-      str = info.join(';')
+      roommate1 = self.get_roommate(p.roommate_id1)
+      roommate2 = self.get_roommate(p.roommate_id2)
+      if ( occupancy.downcase.eql?('single'))
+        roommate1 = 'N/A'
+        roommate2 = 'N/A'
+      end
+      if (occupancy.downcase.eql?('double'))
+        roommate1 = 'TBD' if p.roommate_id1==0;
+        roommate2 = 'N/A'
+      end
+      if (occupancy.downcase.eql?('triple'))
+        roommate1 = 'TBD' if p.roommate_id1==0;
+        roommate1 = 'TBD' if p.roommate_id2==0;
+      end
+      info.push(roommate1)
+      info.push(roommate2)
+
+      str = info.join(',')
       f.puts(str)
     end
 
@@ -526,7 +545,7 @@ class Person < ActiveRecord::Base
 
     # return the name of roommate with the given id
     if (roommate_id.nil? || roommate_id <= 0 )
-      return 'NONE'
+      return 'TBD'
     else
       last_name = Person.find(roommate_id).last_name
       first_name = Person.find(roommate_id).first_name
