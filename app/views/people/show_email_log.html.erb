@@ -3,10 +3,13 @@
 <p></p>
 <table border='1'>
 <% @email_logs_arr.each do |log| %>
-  <% log.each do |name,note_arr| %>
+  <% log.each do |key,note_arr| %>
+    <% tmp = key.split(';') %>
+    <% person_id = tmp[0] %>
+    <% name = tmp[1] %>
     <tr>
       <% if note_arr.length <= 0  %>
-        <td bgcolor='red' colspan='2'><b><%= name %></b>
+        <td bgcolor='red' colspan='2'><b><%= link_to name, person_path(:id=>person_id, :confirmation=>true) %></b>
       <% else %>
         <td colspan='2'><b><%= name %></b>
       <% end %>
