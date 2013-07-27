@@ -443,15 +443,28 @@ class Person < ActiveRecord::Base
       facilitator_deduction += f.total_due
     end
 
+    # registration stats
     total_due = to_currency(self.sum('total_due') - facilitator_deduction)
-    total_paid = to_currency(self.sum('paid_amount') - facilitator_deduction)
+    #total_paid = to_currency(self.sum('paid_amount') - facilitator_deduction)
     total_balance_due = to_currency(self.sum('balance_due'))
     available_scholarship = to_currency(initial_scholarship + self.sum('scholarship_donation'))
     total_scholarship_given = to_currency(self.sum('scholarship_amount'))
+    # deduct donated scholarships from total paid so it isn't include 2 times in report
+    total_paid = to_currency(self.sum('paid_amount') - facilitator_deduction - self.sum('scholarship_donation'))
     total_registered = Person.all.length
     registered_pending_count = self.get_count('registration_status', 'pending')
     registered_paid_count = self.get_count('registration_status', 'registered')
     registered_hold_count = self.get_count('registration_status', 'hold')
+    # calculate 
+    single = get_count('occupancy', '1')
+    double = get_count('occupancy', '2')
+    triple = get_count('occupancy', '3')
+    #single = Person.find(:all, :conditions=>{:occupancy=>1})
+    # num_single_rooms = single.length
+    #double = Person.find(:all, :conditions=>{:occupancy=>2})
+    #num_double_rooms = (double.length.to_f/2.0).ceil
+    #triple = Person.find(:all, :conditions=>{:occupancy=>3})
+    #num_triple_rooms = (triple.length.to_f/3.0).ceil
 
     arr = Array.new
     arr.push("Total due: #{total_due}")
@@ -463,6 +476,9 @@ class Person < ActiveRecord::Base
     arr.push("Total registered(pending): #{registered_pending_count}")
     arr.push("Total registered(paid): #{registered_paid_count}")
     arr.push("Total registered(hold): #{registered_hold_count}")
+    arr.push("Total single occupancy: #{single}")
+    arr.push("Total double occupancy: #{double}")
+    arr.push("Total triple occupancy: #{triple}")
     arr.push("******************************")
     people.each do |p|
     facilitators
@@ -578,7 +594,8 @@ class Person < ActiveRecord::Base
     # person name and value is array of
     # email log notes
     note_hash = Hash.new
-    key = "#{person.first_name} #{person.last_name}"
+    #key = "#{person.first_name} #{person.last_name}"
+    key = "#{person.id};#{person.first_name} #{person.last_name}"
     note_hash[key] = Note.find(:all,:conditions => ["person_id= ? AND note_type= ?", person.id, "email_log"])
     #note_hash[person.id] = Note.find(:all,:conditions => ["person_id= ? AND note_type= ?", person.id, "email_log"])
 
