@@ -15,6 +15,28 @@ class PeopleController < ApplicationController
     # and value is person name
     @roommate_hash = Person.roommate_hash()
 
+    # report to display on index 
+    arr = Person.report(@facilitators, @initial_scholarship)
+    balance_arr = Array.new
+    scholarship_arr = Array.new
+    registered_arr = Array.new
+    occupancy_arr = Array.new
+
+    arr.each do |r|
+      break if (r.match(/\*/))
+      balance_arr.push(r) if (r.match('due'))
+      balance_arr.push(r) if (r.match('Total paid'))
+      scholarship_arr.push(r) if (r.match('scholarship'))
+      registered_arr.push(r) if (r.match('registered'))
+      occupancy_arr.push(r) if (r.match('occupancy'))
+    end
+
+    @totals_hash = Hash.new
+    @totals_hash['balance'] = balance_arr
+    @totals_hash['scholarship'] = scholarship_arr
+    @totals_hash['registered'] = registered_arr
+    @totals_hash['occupancy'] = occupancy_arr
+
     respond_to do |format|
       format.html # index.html.erb
       format.json { render json: @people }

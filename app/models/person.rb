@@ -455,7 +455,8 @@ class Person < ActiveRecord::Base
     #available_scholarship = to_currency(initial_scholarship + self.sum('scholarship_donation'))
     total_scholarship_given = to_currency(self.sum('scholarship_amount'))
     # deduct donated scholarships from total paid so it isn't include 2 times in report
-    total_paid = to_currency(self.sum('paid_amount') - facilitator_deduction - self.sum('scholarship_donation') - initial_scholarship)
+    #total_paid = to_currency(self.sum('paid_amount') - facilitator_deduction - self.sum('scholarship_donation') - initial_scholarship)
+    total_paid = to_currency(self.sum('paid_amount') - facilitator_deduction - self.sum('scholarship_donation'))
     total_registered = Person.all.length
     registered_pending_count = self.get_count('registration_status', 'pending')
     registered_paid_count = self.get_count('registration_status', 'registered')

@@ -1,9 +1,59 @@
-<%= link_to 'New Person', new_person_path %><br>
-<%= link_to 'Registration stats', generate_report_path(:report_type=>'stats') %><br>
-<%= link_to 'Create roommate report', generate_report_path(:report_type=>'roommate') %><br>
-<%= link_to 'Email log', email_log_path %>
+<table border='1'>
+  <tr><td>
+  <table border='0'>
+    <tr><th>Reports</th></tr>
+    <tr><td><%= link_to 'Registration stats', generate_report_path(:report_type=>'stats') %></td></tr>
+    <tr><td><%= link_to 'Create roommate report', generate_report_path(:report_type=>'roommate') %></td></tr>
+    <tr><td><%= link_to 'Email log', email_log_path %></td></tr>
+  </table>
+  </td>
+  <td>
+  <table border='0'>
+    <tr><th>Accounting</th></tr>
+    <% @totals_hash['balance'].each do |value| %>
+      <% value.gsub!('Total ','') %>
+      <% value.capitalize! %>
+      <tr><td><%= value %></td></tr>
+    <% end %>
+  </table>
+  </td>
+  <td>
+  <table border='0'>
+    <tr><th>Scholarship</th></tr>
+    <% @totals_hash['scholarship'].each do |value| %>
+      <% value.gsub!('scholarship','') %>
+      <% value.capitalize! %>
+      <tr><td><%= value %></td></tr>
+    <% end %>
+  </table>
+  </td>
+  <td>
+  <table border='0'>
+    <tr><th>Registrations</th></tr>
+    <% @totals_hash['registered'].each do |value| %>
+      <% value.gsub!('Total ','') %>
+      <% value.capitalize! %>
+      <tr><td><%= value %></td></tr>
+    <% end %>
+  </table>
+  </td>
+  <td>
+  <table border='0'>
+    <tr><th>Occupancy</th></tr>
+    <% @totals_hash['occupancy'].each do |value| %>
+      <% value.gsub!('occupancy','') %>
+      <% value.gsub!('Total','') %>
+      <% value.capitalize! %>
+      <tr><td><%= value %></td></tr>
+    <% end %>
+  </table>
+  </td></tr>
+</table>
 
-<h1>Listing people</h1>
+<h1>Womens Spiritual Retreat</h1>
+
+<b><%= link_to 'Add person', new_person_path %><br></b>
+<hr>
 
 <table border='1'>
   <tr>
