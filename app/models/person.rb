@@ -25,6 +25,8 @@ class Person < ActiveRecord::Base
    :registration_date,
    :due_date,
    :total_due,
+   :scholarship_applicant,
+   :meal_preference,
    :notes
 
    has_many :notes, :dependent=>:destroy
@@ -447,10 +449,13 @@ class Person < ActiveRecord::Base
     total_due = to_currency(self.sum('total_due') - facilitator_deduction)
     #total_paid = to_currency(self.sum('paid_amount') - facilitator_deduction)
     total_balance_due = to_currency(self.sum('balance_due'))
-    available_scholarship = to_currency(initial_scholarship + self.sum('scholarship_donation'))
+    donated_scholarships = to_currency(self.sum('scholarship_donation'))
+    initial_scholarship_amount = to_currency(initial_scholarship)
+    total_scholarship_applicants = self.get_count('scholarship_applicant', '1')
+    #available_scholarship = to_currency(initial_scholarship + self.sum('scholarship_donation'))
     total_scholarship_given = to_currency(self.sum('scholarship_amount'))
     # deduct donated scholarships from total paid so it isn't include 2 times in report
-    total_paid = to_currency(self.sum('paid_amount') - facilitator_deduction - self.sum('scholarship_donation'))
+    total_paid = to_currency(self.sum('paid_amount') - facilitator_deduction - self.sum('scholarship_donation') - initial_scholarship)
     total_registered = Person.all.length
     registered_pending_count = self.get_count('registration_status', 'pending')
     registered_paid_count = self.get_count('registration_status', 'registered')
@@ -470,12 +475,15 @@ class Person < ActiveRecord::Base
     arr.push("Total due: #{total_due}")
     arr.push("Total paid: #{total_paid}")
     arr.push("Total balance due: #{total_balance_due}")
-    arr.push("Total available scholarships: #{available_scholarship}")
+    arr.push("Initial scholarship amount: #{initial_scholarship_amount}")
+    arr.push("Donated scholarships: #{donated_scholarships}")
+    #arr.push("Total available scholarships: #{available_scholarships}")
     arr.push("Total scholarship given: #{total_scholarship_given}")
+    arr.push("Total scholarship applicants: #{total_scholarship_applicants}")
     arr.push("Total registered: #{total_registered}")
     arr.push("Total registered(pending): #{registered_pending_count}")
     arr.push("Total registered(paid): #{registered_paid_count}")
-    arr.push("Total registered(hold): #{registered_hold_count}")
+    #arr.push("Total registered(hold): #{registered_hold_count}")
     arr.push("Total single occupancy: #{single}")
     arr.push("Total double occupancy: #{double}")
     arr.push("Total triple occupancy: #{triple}")

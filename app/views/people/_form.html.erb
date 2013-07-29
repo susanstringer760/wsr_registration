@@ -1,6 +1,9 @@
 <% payment_type_list = {'None'=>'none','Check'=>'check','Cash'=>'cash'} %>
 <% payment_status_list = {'Paid'=>'paid','Partial'=>'partial' } %>
 <% registration_status_list = {'Registered'=>'registered','Wait List'=>'wait_list', 'Pending'=>'pending', 'Hold'=>'hold' } %>
+<% meal_preference_list = {'Vegetarian'=>'vegetarian', 'Gluten-free'=>'gluten_free', 'None'=>'none' } %>
+<% scholarship_applicant_list = {'False'=>'0', 'True'=>'1'} %>
+
 <% due_date = Date.parse('31-07-2013') %>
 
 <%= form_for(@person) do |f| %>
@@ -61,6 +64,14 @@
   <tr>
     <td><b>Check Number:</b></td>
     <td><%= f.text_field :check_num, :size=>8 %></td>
+  </tr>
+  <tr>
+    <td><b>Scholarship applicant:</b></td>
+    <% if caller.eql?('edit') %>
+      <td><%= f.select(:scholarship_applicant, scholarship_applicant_list, {:selected=>@person.scholarship_applicant} ) %></td>
+    <% else %>
+      <td><%= f.select(:scholarship_applicant, scholarship_applicant_list, {:selected=>'False'} ) %></td>
+    <% end %>
   </tr>
   <tr>
     <td><b>Scholarship received:</b></td>

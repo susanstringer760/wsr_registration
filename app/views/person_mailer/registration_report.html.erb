@@ -1,7 +1,6 @@
-Hi Clare and Joanne,
 <p></p>
 <%  date_time = DateTime.now.strftime("%F %T") %>
-Here is the registration report as of <%= date_time %>
+Registration report as of <%= date_time %>
 <p></p>
 <%= number_to_currency(@total_paid) %>
 <%= number_to_currency(@total_balance_due) %>
