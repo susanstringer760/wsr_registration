@@ -21,8 +21,8 @@ class ApplicationController < ActionController::Base
     @occupancy_by_value = {'Single'=>'1','Double'=>'2', 'Triple'=>'3' }
 
     # report recipients
-    @email_list = "sanityhasreturned@gmail.com,sensabama@aol.com,susanstringer760@comcast.net"
-    #@email_list = "susanstringer760@comcast.net, snorman@ucar.edu"
+    #@email_list = "sanityhasreturned@gmail.com,sensabama@aol.com,susanstringer760@comcast.net"
+    @email_list = "susanstringer760@comcast.net, snorman@ucar.edu"
 
     # base scholarship amount
     @initial_scholarship = 300.00
