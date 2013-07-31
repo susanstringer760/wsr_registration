@@ -21,6 +21,10 @@ Thank you for registering for the 2013 Women's Spiritual Retreat. This is a conf
 Your current balance of <%= number_to_currency(@person.balance_due) %> is due by August 31. Please contact me if you have any questions regarding payment.
 <% end %>
 <p></p>
+<% if @person.occupancy == 3 %>
+You are currently registered for a triple occupancy room, which has 2 queen beds and 1 pullout couch.
+<% end %>
+<p></p>
 <% if ( (@person.needs_ride.blank?) && (@person.can_drive_num.blank?) ) %>
 The retreat will be held at the YMCA of the Rockies in Estes Park.  If you are interested in participating in a carpool, please send me an email and indicate if you can drive (and number of occupants) or if you need a ride.
 <% end %>
