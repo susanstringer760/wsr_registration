@@ -484,7 +484,7 @@ class Person < ActiveRecord::Base
     arr.push("Total registered: #{total_registered}")
     arr.push("Total registered(pending): #{registered_pending_count}")
     arr.push("Total registered(paid): #{registered_paid_count}")
-    #arr.push("Total registered(hold): #{registered_hold_count}")
+    arr.push("Total registered(hold): #{registered_hold_count}")
     arr.push("Total single occupancy: #{single}")
     arr.push("Total double occupancy: #{double}")
     arr.push("Total triple occupancy: #{triple}")
