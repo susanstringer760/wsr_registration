@@ -1,3 +1,6 @@
+<%= link_to 'Back to list', people_path %><br>
+<%= link_to 'Edit', edit_person_path(@person) %>
+<hr>
 <h3>Registration information for <%= @params[0][1] %></h3>
 <b>Email: <%= @person.email %></b>
 <table border='0'>
