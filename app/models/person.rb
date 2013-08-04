@@ -449,11 +449,11 @@ class Person < ActiveRecord::Base
 
     # registration stats
     total_due = self.sum('total_due') - facilitator_deduction
-    total_balance_due = self.sum('balance_due')
     donated_scholarships = self.sum('scholarship_donation')
     initial_scholarship_amount = initial_scholarship
     total_scholarship_applicants = self.get_count('scholarship_applicant', '1')
     total_scholarship_given = self.sum('scholarship_amount')
+    total_balance_due = self.sum('balance_due') + total_scholarship_given
     total_available_scholarships = initial_scholarship_amount + donated_scholarships - total_scholarship_given
     # deduct donated scholarships from total paid so it isn't include 2 times in report
     total_paid = self.sum('paid_amount') - facilitator_deduction - self.sum('scholarship_donation')
