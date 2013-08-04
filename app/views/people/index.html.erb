@@ -58,9 +58,10 @@
 <table border='1'>
   <tr>
     <th><%= link_to 'Name', people_path(:sort_by=>'last_name') %></th>
+    <th>Roommate(s)</th>
     <th>Occupancy</th>
     <th>Total due</th>
-    <th>Paid</th>
+    <th><%= link_to 'Paid', people_path(:sort_by=>'paid_amount') %></th>
     <th><%= link_to 'Balance due', people_path(:sort_by=>'balance_due') %></th>
     <th><%= link_to 'Payment status', people_path(:sort_by=>'payment_status') %></th>
     <th><%= link_to 'Registration status', people_path(:sort_by=>'registration_status') %></th>
@@ -70,15 +71,17 @@
 
 <% @people.each do |person| %>
   <tr>
-    <% name = "#{person.first_name} #{person.last_name}" %>
     <td>
+    <% name = "#{person.first_name} #{person.last_name}" %>
     <%= link_to name, person_path(:id=>person.id, :confirmation=>false) %>
+    </td>
+    <td>
     <%  if (person.occupancy > 1 ) %>
        <% id = person.roommate_id1 %>
        <% if (id == 0 ) %>
-         <br>[<%= @roommate_hash[id.to_s] %>]
+         [<%= @roommate_hash[id.to_s] %>]
        <% else %>
-         <br>[<%= link_to @roommate_hash[id.to_s], person_path(:id=>person.roommate_id1, :confirmation=>false) %>]
+         [<%= link_to @roommate_hash[id.to_s], person_path(:id=>person.roommate_id1, :confirmation=>false) %>]
        <% end %>
     <% end %>
     <%  if (person.occupancy > 2) %>
@@ -94,10 +97,15 @@
     <td><%= number_to_currency(@prices[person.occupancy]) %></td>
     <td><%= number_to_currency(person.paid_amount) %></td>
     <% if person.balance_due.to_f > 0 %>
-      <td class='debit'><%= number_to_currency(person.balance_due.abs) %></td>
+      <% if person.registration_status.eql?('pending') %>
+        <td class='pending'><%= number_to_currency(person.balance_due.abs) %></td>
+      <% else %>
+        <td class='debit'><%= number_to_currency(person.balance_due.abs) %></td>
+      <% end %>
     <% else %>
       <td class='credit'><%= number_to_currency(person.balance_due.abs) %></td>
     <% end %>
+
     <td><%= person.payment_status %></td>
     <td><%= person.registration_status %></td>
     <td>

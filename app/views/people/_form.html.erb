@@ -1,4 +1,5 @@
-<% payment_type_list = {'None'=>'none','Check'=>'check','Cash'=>'cash'} %>
+<% payment_type_list = {'None'=>'None','Check'=>'check','Cash'=>'cash'} %>
+<% ppayment_type_list = {'none'=>'None','check'=>'Check','cash'=>'Cash'} %>
 <% payment_status_list = {'Paid'=>'paid','Partial'=>'partial' } %>
 <% registration_status_list = {'Registered'=>'registered','Wait List'=>'wait_list', 'Pending'=>'pending', 'Hold'=>'hold' } %>
 <% meal_preference_list = {'Vegetarian'=>'vegetarian', 'Gluten-free'=>'gluten_free', 'None'=>'none' } %>
@@ -56,9 +57,11 @@
   <tr>
     <td><b>Payment type:</b></td>
     <% if caller.eql?('edit') %>
-      <td><%= f.select(:payment_type, payment_type_list, {:selected=>@person.payment_type} ) %></td>
+      <% payment_type = payment_type_list[@person.payment_type] %>
+      <td><%= f.select(:payment_type, payment_type_list, {:selected=>@person.payment_type}, :include_blank=>true ) %></td>
     <% else %>
       <td><%= f.select(:payment_type, payment_type_list, {:selected=>'None'} ) %></td>
+      <% payment_type = payment_type_list['None'] %>
     <% end %>
   </tr>
   <tr>
@@ -68,9 +71,9 @@
   <tr>
     <td><b>Scholarship applicant:</b></td>
     <% if caller.eql?('edit') %>
-      <td><%= f.select(:scholarship_applicant, scholarship_applicant_list, {:selected=>@person.scholarship_applicant} ) %></td>
+      <td><%= f.select(:scholarship_applicant, scholarship_applicant_list, {:selected=>1} ) %></td>
     <% else %>
-      <td><%= f.select(:scholarship_applicant, scholarship_applicant_list, {:selected=>'False'} ) %></td>
+      <td><%= f.select(:scholarship_applicant, scholarship_applicant_list, {:selected=>0} ) %></td>
     <% end %>
   </tr>
   <tr>
@@ -83,7 +86,11 @@
   </tr>
   <tr>
     <td><b>Payment status: </b>
-    <td><%= f.select(:payment_status, payment_status_list) %></td>
+    <% if caller.eql?('edit') %>
+      <td><%= f.select(:payment_status, payment_status_list, {:selected=>1} ) %></td>
+    <% else %>
+      <td><%= f.select(:scholarship_applicant, scholarship_applicant_list, {:selected=>0} ) %></td>
+    <% end %>
   </tr>
   <tr>
     <td><b>Date paid: </b>

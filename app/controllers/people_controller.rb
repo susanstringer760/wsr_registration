@@ -11,6 +11,8 @@ class PeopleController < ApplicationController
     # list of people
     @people = Person.sort_by(sort_by) 
 
+    @people_options = @people.collect {|p|["#{p.first_name} #{p.last_name}",p.id]}
+
     # hash of roommates where key is person id
     # and value is person name
     @roommate_hash = Person.roommate_hash()
@@ -48,6 +50,8 @@ class PeopleController < ApplicationController
   # GET /people/1.json
   def show
 
+  # render :text=>"testit: #{params[:id]}"
+  # return
     @person = Person.find(params[:id])
     #@roommates  = Person.roommate_list()
     @roommates  = Person.roommate_list(@person.id)
