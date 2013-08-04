@@ -87,6 +87,8 @@ class Person < ActiveRecord::Base
      payment_status = 'paid' if (balance_due <= 0)
      payment_status = 'pending' if (balance_due > 0 )
 
+     registration_status = 'registered' if (balance_due <= 0)
+     registration_status = 'pending' if (balance_due > 0)
      # registration status
      if ( params[:registration_status].eql?('hold'))
        registration_status = params[:registration_status]
@@ -446,21 +448,23 @@ class Person < ActiveRecord::Base
     end
 
     # registration stats
-    total_due = to_currency(self.sum('total_due') - facilitator_deduction)
-    #total_paid = to_currency(self.sum('paid_amount') - facilitator_deduction)
-    total_balance_due = to_currency(self.sum('balance_due'))
-    donated_scholarships = to_currency(self.sum('scholarship_donation'))
-    initial_scholarship_amount = to_currency(initial_scholarship)
+    total_due = self.sum('total_due') - facilitator_deduction
+    total_balance_due = self.sum('balance_due')
+    donated_scholarships = self.sum('scholarship_donation')
+    initial_scholarship_amount = initial_scholarship
     total_scholarship_applicants = self.get_count('scholarship_applicant', '1')
-    #available_scholarship = to_currency(initial_scholarship + self.sum('scholarship_donation'))
-    total_scholarship_given = to_currency(self.sum('scholarship_amount'))
+    total_scholarship_given = self.sum('scholarship_amount')
+    total_available_scholarships = initial_scholarship_amount + donated_scholarships - total_scholarship_given
     # deduct donated scholarships from total paid so it isn't include 2 times in report
-    #total_paid = to_currency(self.sum('paid_amount') - facilitator_deduction - self.sum('scholarship_donation') - initial_scholarship)
     total_paid = to_currency(self.sum('paid_amount') - facilitator_deduction - self.sum('scholarship_donation'))
     total_registered = Person.all.length
     registered_pending_count = self.get_count('registration_status', 'pending')
     registered_paid_count = self.get_count('registration_status', 'registered')
     registered_hold_count = self.get_count('registration_status', 'hold')
+
+    #available_scholarship = to_currency(initial_scholarship + self.sum('scholarship_donation'))
+    #total_paid = to_currency(self.sum('paid_amount') - facilitator_deduction - self.sum('scholarship_donation') - initial_scholarship)
+    #total_paid = to_currency(self.sum('paid_amount') - facilitator_deduction)
     # calculate 
     single = get_count('occupancy', '1')
     double = get_count('occupancy', '2')
@@ -473,13 +477,13 @@ class Person < ActiveRecord::Base
     #num_triple_rooms = (triple.length.to_f/3.0).ceil
 
     arr = Array.new
-    arr.push("Total due: #{total_due}")
-    arr.push("Total paid: #{total_paid}")
-    arr.push("Total balance due: #{total_balance_due}")
-    arr.push("Initial scholarship amount: #{initial_scholarship_amount}")
-    arr.push("Donated scholarships: #{donated_scholarships}")
-    #arr.push("Total available scholarships: #{available_scholarships}")
-    arr.push("Total scholarship given: #{total_scholarship_given}")
+    arr.push("Total due: #{to_currency(total_due)}")
+    arr.push("Total paid: #{to_currency(total_paid)}")
+    arr.push("Total balance due: #{to_currency(total_balance_due)}")
+    arr.push("Initial scholarship amount: #{to_currency(initial_scholarship_amount)}")
+    arr.push("Donated scholarships: #{to_currency(donated_scholarships)}")
+    arr.push("Total available scholarships: #{to_currency(total_available_scholarships)}")
+    arr.push("Total scholarship given: #{to_currency(total_scholarship_given)}")
     arr.push("Total scholarship applicants: #{total_scholarship_applicants}")
     arr.push("Total registered: #{total_registered}")
     arr.push("Total registered(pending): #{registered_pending_count}")
