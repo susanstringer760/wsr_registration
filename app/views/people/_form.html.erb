@@ -71,7 +71,7 @@
   <tr>
     <td><b>Scholarship applicant:</b></td>
     <% if caller.eql?('edit') %>
-      <td><%= f.select(:scholarship_applicant, scholarship_applicant_list, {:selected=>1} ) %></td>
+      <td><%= f.select(:scholarship_applicant, scholarship_applicant_list, {:selected=>@person.scholarship_applicant} ) %></td>
     <% else %>
       <td><%= f.select(:scholarship_applicant, scholarship_applicant_list, {:selected=>0} ) %></td>
     <% end %>
