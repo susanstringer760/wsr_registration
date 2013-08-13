@@ -2,28 +2,40 @@
 <%= link_to 'Back to list', people_path %>
 <p></p>
 <table border='1'>
-<% @email_logs_arr.each do |log| %>
-  <% log.each do |key,note_arr| %>
-    <% tmp = key.split(';') %>
-    <% person_id = tmp[0] %>
-    <% name = tmp[1] %>
-    <tr>
-      <% if note_arr.length <= 0  %>
-        <td bgcolor='red' colspan='2'><b><%= link_to name, person_path(:id=>person_id, :confirmation=>true) %></b>
-      <% else %>
-        <td colspan='2'><b><%= name %></b>
-      <% end %>
-    </td>
-    </tr>
-    <tr>
-      <% next if note_arr.length <= 0 %>
-      <td>
-        <% note_arr.each do |note| %>
-	  <%= note.date_time %>: <%= note.content %><br>
-        <% end %>
-      </td>
-    </tr>
+<tr>
+  <th>Name</th>
+  <th>Balance due</th>
+  <th>Content</th>
+  <th># Sent</th>
+</tr>
+<% @people.each do |p| %>
+  <% note_hash = @email_logs_hash[p.id] %>
+  <% note_arr = note_hash[p.id] %>
+  <% name = "#{p.first_name} #{p.last_name}" %>
+  <tr>
+  <% if ( (note_arr.length == 0) or (p.balance_due > 0 ) ) %>
+    <td bgcolor='red'><b><%= link_to name, person_path(:id=>p.id, :confirmation=>true) %></b></td>
+  <% else %>
+    <td><b><%= link_to name, person_path(:id=>p.id, :confirmation=>true) %></b></td>
   <% end %>
+  <% content_arr = Array.new %>
+  <% if note_arr.length >= 1 %>
+    <% note_arr.each do |n| %>
+      <% content_arr.push(n.content) %>
+    <% end %>
+  <% end %>
+  <td><%= number_to_currency(p.balance_due) %></td>
+  <td>
+  <% if content_arr.length > 0  %>
+    <table>
+      <% content_arr.each do |c| %>
+        <tr><td><%= c %></td></tr>
+      <% end %>
+    </table>
+  <% end %>
+  </td>
+  <td><%= content_arr.length %></td>
+  </tr>
 <% end %>
 </table>
 <p></p>

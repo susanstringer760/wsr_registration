@@ -263,11 +263,14 @@ class PeopleController < ApplicationController
 
   def show_email_log
 
-    @people = Person.find(:all)
+    @people = Person.find(:all, :order=>'last_name')
 
     @email_logs_arr = Array.new
+    @email_logs_hash = Hash.new
+ 
     @people.each do |p|
       note_hash = Person.get_email_log(p)
+      @email_logs_hash[p.id] = note_hash
       @email_logs_arr.push(note_hash)
     end
 

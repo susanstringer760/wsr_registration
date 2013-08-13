@@ -438,6 +438,7 @@ class Person < ActiveRecord::Base
   def self.report(facilitators, initial_scholarship)
 
     sort_by = 'last_name'
+    #sort_by = 'registration_status'
     # get a list of people
     people = self.sort_by(sort_by)
 
@@ -461,20 +462,9 @@ class Person < ActiveRecord::Base
     registered_pending_count = self.get_count('registration_status', 'pending')
     registered_paid_count = self.get_count('registration_status', 'registered')
     registered_hold_count = self.get_count('registration_status', 'hold')
-
-    #available_scholarship = to_currency(initial_scholarship + self.sum('scholarship_donation'))
-    #total_paid = to_currency(self.sum('paid_amount') - facilitator_deduction - self.sum('scholarship_donation') - initial_scholarship)
-    #total_paid = to_currency(self.sum('paid_amount') - facilitator_deduction)
-    # calculate 
     single = get_count('occupancy', '1')
     double = get_count('occupancy', '2')
     triple = get_count('occupancy', '3')
-    #single = Person.find(:all, :conditions=>{:occupancy=>1})
-    # num_single_rooms = single.length
-    #double = Person.find(:all, :conditions=>{:occupancy=>2})
-    #num_double_rooms = (double.length.to_f/2.0).ceil
-    #triple = Person.find(:all, :conditions=>{:occupancy=>3})
-    #num_triple_rooms = (triple.length.to_f/3.0).ceil
 
     arr = Array.new
     arr.push("Total due: #{to_currency(total_due)}")
@@ -494,20 +484,33 @@ class Person < ActiveRecord::Base
     arr.push("Total triple occupancy: #{triple}")
     arr.push("******************************")
     people.each do |p|
-    facilitators
       next if (p.last_name.eql?(facilitators[0].last_name))
       next if (p.last_name.eql?(facilitators[1].last_name))
-      #next if (p.last_name.eql?('Vielbig'))
-      #next if (p.last_name.eql?('Bruni'))
-      arr.push("#{p.first_name} #{p.last_name}")
-      arr.push("Registration status: #{p.registration_status}")
-      arr.push("Paid amount: #{p.paid_amount}")
+      stats_arr = Array.new
+      arr.push("Name: #{p.first_name} #{p.last_name}\n")
+      stats_arr.push("Status: #{p.registration_status}")
+      stats_arr.push("Paid: #{p.paid_amount}")
       if ( p.balance_due < 0 )
-        arr.push("Donation: #{p.balance_due.abs}")
+        stats_arr.push("Donation: #{p.balance_due.abs}")
       else
-        arr.push("Balance due: #{p.balance_due}")
+        stats_arr.push("Balance due: #{p.balance_due}")
       end
+      if ( p.scholarship_amount > 0 )
+        stats_arr.push("Scholarship: #{p.scholarship_amount}")
+      end
+      stats_str = stats_arr.join('; ')
+      arr.push(stats_str);
       arr.push("--------------------")
+
+#      arr.push("#{p.first_name} #{p.last_name}")
+#      arr.push("Registration status: #{p.registration_status}")
+#      arr.push("Paid amount: #{p.paid_amount}")
+#      if ( p.balance_due < 0 )
+#        arr.push("Donation: #{p.balance_due.abs}")
+#      else
+#        arr.push("Balance due: #{p.balance_due}")
+#      end
+#      arr.push("--------------------")
     end
 
     arr
@@ -609,8 +612,9 @@ class Person < ActiveRecord::Base
     note_hash = Hash.new
     #key = "#{person.first_name} #{person.last_name}"
     key = "#{person.id};#{person.first_name} #{person.last_name}"
-    note_hash[key] = Note.find(:all,:conditions => ["person_id= ? AND note_type= ?", person.id, "email_log"])
+    #note_hash[key] = Note.find(:all,:conditions => ["person_id= ? AND note_type= ?", person.id, "email_log"])
     #note_hash[person.id] = Note.find(:all,:conditions => ["person_id= ? AND note_type= ?", person.id, "email_log"])
+    note_hash[person.id] = Note.find(:all,:conditions => ["person_id= ? AND note_type= ? and content=?", person.id, "email_log", "confirmation sent"])
 
     return note_hash
 

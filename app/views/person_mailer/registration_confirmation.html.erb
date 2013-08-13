@@ -22,7 +22,7 @@ Your current balance of <%= number_to_currency(@person.balance_due) %> is due by
 <% end %>
 <p></p>
 <% if @person.occupancy == 3 %>
-You are currently registered for a triple occupancy room, which has 2 queen beds and 1 pullout couch.
+You are currently registered for a triple occupancy room, which is equipped with 2 queen beds and 1 pullout couch.
 <% end %>
 <p></p>
 <% if ( (@person.needs_ride.blank?) && (@person.can_drive_num.blank?) ) %>
