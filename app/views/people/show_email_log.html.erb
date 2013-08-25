@@ -21,7 +21,8 @@
   <% content_arr = Array.new %>
   <% if note_arr.length >= 1 %>
     <% note_arr.each do |n| %>
-      <% content_arr.push(n.content) %>
+     <% content = "#{n.date_time}: #{n.content}" %>
+      <% content_arr.push(content) %>
     <% end %>
   <% end %>
   <td><%= number_to_currency(p.balance_due) %></td>
