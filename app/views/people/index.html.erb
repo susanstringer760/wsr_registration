@@ -72,7 +72,11 @@
 <% @people.each do |person| %>
   <tr>
     <td>
-    <% name = "#{person.first_name} #{person.last_name}" %>
+    <% if !person.scholarship_applicant %>
+      <% name = "#{person.first_name} #{person.last_name}" %>
+    <% else %>
+      <% name = "* #{person.first_name} #{person.last_name}" %>
+    <% end %>
     <%= link_to name, person_path(:id=>person.id, :confirmation=>false) %>
     </td>
     <td>
