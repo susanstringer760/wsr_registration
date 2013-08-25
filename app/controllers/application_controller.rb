@@ -25,7 +25,7 @@ class ApplicationController < ActionController::Base
     #@email_list = "susanstringer760@comcast.net, snorman@ucar.edu"
 
     # base scholarship amount
-    @initial_scholarship = 300.00
+    @initial_scholarship = 350.00
 
     # amount for facilitators
     @facilitators = Array.new

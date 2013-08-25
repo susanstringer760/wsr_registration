@@ -454,13 +454,16 @@ class Person < ActiveRecord::Base
     initial_scholarship_amount = initial_scholarship
     total_scholarship_applicants = self.get_count('scholarship_applicant', '1')
     total_scholarship_given = self.sum('scholarship_amount')
-    total_balance_due = self.sum('balance_due') + total_scholarship_given
+    #total_balance_due = self.sum('balance_due') + total_scholarship_given
+    total_balance_due = self.sum('balance_due')
     total_available_scholarships = initial_scholarship_amount + donated_scholarships - total_scholarship_given
     # deduct donated scholarships from total paid so it isn't include 2 times in report
-    total_paid = self.sum('paid_amount') - facilitator_deduction - self.sum('scholarship_donation')
+    #total_paid = self.sum('paid_amount') - facilitator_deduction - self.sum('scholarship_donation')
+    total_paid = self.sum('paid_amount') - facilitator_deduction - self.sum('scholarship_donation') + self.sum('scholarship_amount')
     total_registered = Person.all.length
     registered_pending_count = self.get_count('registration_status', 'pending')
-    registered_paid_count = self.get_count('registration_status', 'registered')
+    #registered_paid_count = self.get_count('registration_status', 'registered')
+    registered_paid_count = self.get_count('registration_status', 'registered') - facilitators.length
     registered_hold_count = self.get_count('registration_status', 'hold')
     single = get_count('occupancy', '1')
     double = get_count('occupancy', '2')
