@@ -3,7 +3,7 @@
 <% payment_status_list = {'Paid'=>'paid','Partial'=>'partial' } %>
 <% registration_status_list = {'Registered'=>'registered','Wait List'=>'wait_list', 'Pending'=>'pending', 'Hold'=>'hold' } %>
 <% meal_preference_list = {'Vegetarian'=>'vegetarian', 'Gluten-free'=>'gluten_free', 'None'=>'none' } %>
-<% scholarship_applicant_list = {'False'=>'0', 'True'=>'1'} %>
+<% scholarship_applicant_list = {'False'=>0, 'True'=>1} %>
 
 <% due_date = Date.parse('31-07-2013') %>
 
@@ -70,19 +70,16 @@
   </tr>
   <tr>
     <td><b>Scholarship applicant:</b></td>
-    <% if caller.eql?('edit') %>
-      <td><%= f.select(:scholarship_applicant, scholarship_applicant_list, {:selected=>@person.scholarship_applicant} ) %></td>
-    <% else %>
-      <td><%= f.select(:scholarship_applicant, scholarship_applicant_list, {:selected=>0} ) %></td>
-    <% end %>
+    <% @person.scholarship_applicant ? value = 1 : value = 0 %>
+    <td><%= f.select(:scholarship_applicant, scholarship_applicant_list, {:selected=>value} ) %></td>
   </tr>
   <tr>
     <td><b>Scholarship received:</b></td>
-    <td><%= f.text_field :scholarship_amount, {:size=>8, :value=>0.0} %></td>
+    <td><%= f.text_field :scholarship_amount, {:size=>8, :value=>@person.scholarship_amount} %></td>
   </tr>
   <tr>
     <td><b>Scholarship donated:</b></td>
-    <td><%= f.text_field :scholarship_donation, {:size=>8, :value=>0.0} %></td>
+    <td><%= f.text_field :scholarship_donation, {:size=>8, :value=>@person.scholarship_donation } %></td>
   </tr>
   <tr>
     <td><b>Payment status: </b>
