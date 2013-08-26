@@ -86,6 +86,7 @@ class Person < ActiveRecord::Base
      # payment status
      payment_status = 'paid' if (balance_due <= 0)
      payment_status = 'pending' if (balance_due > 0 )
+     payment_status = 'hold' if (balance_due == total_due  )
 
      registration_status = 'registered' if (balance_due <= 0)
      registration_status = 'pending' if (balance_due > 0)
