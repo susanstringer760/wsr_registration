@@ -420,7 +420,7 @@ class Person < ActiveRecord::Base
       end
       if (occupancy.downcase.eql?('triple'))
         roommate1 = 'TBD' if p.roommate_id1==0;
-        roommate1 = 'TBD' if p.roommate_id2==0;
+        roommate2 = 'TBD' if p.roommate_id2==0;
       end
       info.push(roommate1)
       info.push(roommate2)
