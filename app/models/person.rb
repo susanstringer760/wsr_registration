@@ -82,11 +82,14 @@ class Person < ActiveRecord::Base
      paid_amount = params[:paid_amount].to_f
      scholarship_amount = params[:scholarship_amount].to_f
      balance_due =  total_due - paid_amount - scholarship_amount 
+     wait_list_num = params[:wait_list_num]
 
      # payment status
      payment_status = 'paid' if (balance_due <= 0)
      payment_status = 'pending' if (balance_due > 0 )
-     payment_status = 'hold' if (balance_due == total_due  )
+     #payment_status = 'hold' if (balance_due == total_due  )
+     payment_status = 'hold' if (paid_amount == 0.0)
+     payment_status = 'wait_list' if (!params[:wait_list_num].nil?)
 
      registration_status = 'registered' if (balance_due <= 0)
      registration_status = 'pending' if (balance_due > 0)
@@ -438,8 +441,9 @@ class Person < ActiveRecord::Base
 
   def self.report(facilitators, initial_scholarship)
 
-    sort_by = 'last_name'
+    #sort_by = 'last_name'
     #sort_by = 'registration_status'
+    sort_by = 'balance_due'
     # get a list of people
     people = self.sort_by(sort_by)
 
@@ -487,7 +491,8 @@ class Person < ActiveRecord::Base
     arr.push("Total double occupancy: #{double}")
     arr.push("Total triple occupancy: #{triple}")
     arr.push("******************************")
-    people.each do |p|
+    #people.each do |p|
+    people.reverse.each do |p|
       next if (p.last_name.eql?(facilitators[0].last_name))
       next if (p.last_name.eql?(facilitators[1].last_name))
       stats_arr = Array.new
@@ -501,6 +506,9 @@ class Person < ActiveRecord::Base
       end
       if ( p.scholarship_amount > 0 )
         stats_arr.push("Scholarship: #{p.scholarship_amount}")
+      end
+      if ( !p.wait_list_num.nil? )
+        stats_arr.push("Wait list #: #{p.wait_list_num}")
       end
       stats_str = stats_arr.join('; ')
       arr.push(stats_str);
