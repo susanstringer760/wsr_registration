@@ -103,7 +103,7 @@
     <% if person.balance_due.to_f > 0 %>
       <% if person.registration_status.eql?('pending') %>
         <td class='pending'><%= number_to_currency(person.balance_due.abs) %></td>
-      <% else %>
+      <% elsif person.paid_amount.to_f == 0 %>
         <td class='debit'><%= number_to_currency(person.balance_due.abs) %></td>
       <% end %>
     <% else %>
