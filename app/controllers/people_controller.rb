@@ -25,7 +25,7 @@ class PeopleController < ApplicationController
     @roommate_hash = Person.roommate_hash()
 
     # report to display on index 
-    arr = Person.report(@facilitators, @initial_scholarship)
+    arr = Person.report(@facilitators, @initial_scholarship,false)
     balance_arr = Array.new
     scholarship_arr = Array.new
     registered_arr = Array.new
@@ -303,6 +303,7 @@ class PeopleController < ApplicationController
   def report
 
    report_type = params[:report_type]
+   split_report = params[:split_report]
 
    if (report_type.eql?('roommate'))
     date_time = Time.now.strftime("%Y%m%d_%H%M") 
@@ -315,7 +316,9 @@ class PeopleController < ApplicationController
    if (report_type.eql?('stats'))
      # generate status report
      @date_time = DateTime.now.strftime("%F %T")
-     @arr = Person.report(@facilitators, @initial_scholarship)
+     @arr = Person.report(@facilitators, @initial_scholarship,split_report)
+     #render :text=>"qwer: #{@arr}"
+     #return
      @msg = "Report sent to: #{@email_list}"
      PersonMailer.registration_report(@email_list,@arr).deliver
    end
