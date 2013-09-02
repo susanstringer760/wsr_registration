@@ -2,7 +2,8 @@
   <tr><td>
   <table border='0'>
     <tr><th>Reports</th></tr>
-    <tr><td><%= link_to 'Registration stats', generate_report_path(:report_type=>'stats') %></td></tr>
+    <tr><td><%= link_to 'Registration stats (split)', generate_report_path(:report_type=>'stats', :split_report=>true) %></td></tr>
+    <tr><td><%= link_to 'Registration stats', generate_report_path(:report_type=>'stats', :split_report=>false) %></td></tr>
     <tr><td><%= link_to 'Create roommate report', generate_report_path(:report_type=>'roommate') %></td></tr>
     <tr><td><%= link_to 'Email log', email_log_path %></td></tr>
   </table>
