@@ -9,7 +9,14 @@ class PeopleController < ApplicationController
     sort_by = 'last_name'
 
     # list of people
-    @people = Person.sort_by(sort_by) 
+    # @people = Person.sort_by(sort_by) 
+    # set balance due as reverse order
+    # so we can tell what is still owed
+    if ( sort_by.eql?('balance_due'))
+      @people = Person.sort_by(sort_by).reverse() 
+    else 
+      @people = Person.sort_by(sort_by) 
+    end 
 
     @people_options = @people.collect {|p|["#{p.first_name} #{p.last_name}",p.id]}
 
@@ -278,14 +285,18 @@ class PeopleController < ApplicationController
 
   def test_template
 
-    @person = Person.find(params[:id]) 
-
-    @params = Person.get_confirmation(@person, @occupancy_by_id, @prices)
-
-    #@filtered_notes = Person.get_filtered_notes(@person, 'confirmation')
-    @filtered_notes = Person.get_notes(@person, 'confirmation')
-    render :text=>"tesit: #{@filtered_notes}"
-    return
+#    @scholarship_applicants = Person.find(:all,:conditions=>'scholarship_applicant'=1);
+#    render :text=>"in test_template"
+#    return
+#
+#    @person = Person.find(params[:id]) 
+#
+#    @params = Person.get_confirmation(@person, @occupancy_by_id, @prices)
+#
+#    #@filtered_notes = Person.get_filtered_notes(@person, 'confirmation')
+#    @filtered_notes = Person.get_notes(@person, 'confirmation')
+#    render :text=>"tesit: #{@filtered_notes}"
+#    return
 
   end
 
