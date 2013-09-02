@@ -89,10 +89,12 @@ class Person < ActiveRecord::Base
      payment_status = 'pending' if (balance_due > 0 )
      #payment_status = 'hold' if (balance_due == total_due  )
      payment_status = 'hold' if (paid_amount == 0.0)
-     payment_status = 'wait_list' if (!params[:wait_list_num].nil?)
+     #payment_status = 'wait_list' if (!params[:wait_list_num].nil?)
 
      registration_status = 'registered' if (balance_due <= 0)
      registration_status = 'pending' if (balance_due > 0)
+     registration_status = 'wait_list' if ( !params[:wait_list_num].nil?)
+
      # registration status
      if ( params[:registration_status].eql?('hold'))
        registration_status = params[:registration_status]
