@@ -441,7 +441,37 @@ class Person < ActiveRecord::Base
 
   end
 
-  def self.report(facilitators, initial_scholarship)
+  def self.scholarship_applicants()
+
+    # get a list of scholarship only
+
+    sort_by = 'balance_due'
+    # get a list of people
+    people = Person.find(:all, :conditions=>{:scholarship_applicant=>1}, :order=>'balance_due')
+
+    arr = Array.new
+    arr.push("***** SCHOLARSHIP APPLICANTS *****")
+    people.reverse.each do |p|
+      arr.push("Name: #{p.first_name} #{p.last_name}")
+      arr.push("Status: #{p.registration_status}")
+      arr.push("Paid: #{p.paid_amount}")
+      if ( p.balance_due < 0 )
+        arr.push("Donation: #{p.balance_due.abs}")
+      else
+        arr.push("Balance due: #{p.balance_due}")
+      end
+      if ( p.scholarship_amount > 0 )
+        arr.push("Scholarship: #{p.scholarship_amount}")
+      end
+      arr.push("----------------------")
+    end
+    arr.push("***** NON SCHOLARSHIP APPLICANTS *****")
+
+    arr
+
+  end
+
+  def self.report(facilitators, initial_scholarship, split_report)
 
     #sort_by = 'last_name'
     #sort_by = 'registration_status'
@@ -476,6 +506,7 @@ class Person < ActiveRecord::Base
     double = get_count('occupancy', '2')
     triple = get_count('occupancy', '3')
 
+
     arr = Array.new
     arr.push("Total due: #{to_currency(total_due)}")
     arr.push("Total paid: #{to_currency(total_paid)}")
@@ -493,10 +524,17 @@ class Person < ActiveRecord::Base
     arr.push("Total double occupancy: #{double}")
     arr.push("Total triple occupancy: #{triple}")
     arr.push("******************************")
-    #people.each do |p|
+
+    # scholarship applicants
+    if ( split_report.eql?('true'))
+      arr.concat(scholarship_applicants = self.scholarship_applicants())
+    end
+
     people.reverse.each do |p|
+      next if ((split_report.eql?('true')) and (p.scholarship_applicant) )
       next if (p.last_name.eql?(facilitators[0].last_name))
       next if (p.last_name.eql?(facilitators[1].last_name))
+      arr.push("--------------------")
       stats_arr = Array.new
       arr.push("Name: #{p.first_name} #{p.last_name}\n")
       stats_arr.push("Status: #{p.registration_status}")
@@ -514,22 +552,9 @@ class Person < ActiveRecord::Base
       end
       stats_str = stats_arr.join('; ')
       arr.push(stats_str);
-      arr.push("--------------------")
-
-#      arr.push("#{p.first_name} #{p.last_name}")
-#      arr.push("Registration status: #{p.registration_status}")
-#      arr.push("Paid amount: #{p.paid_amount}")
-#      if ( p.balance_due < 0 )
-#        arr.push("Donation: #{p.balance_due.abs}")
-#      else
-#        arr.push("Balance due: #{p.balance_due}")
-#      end
-#      arr.push("--------------------")
     end
 
     arr
-
-
 
   end
 
