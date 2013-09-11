@@ -216,11 +216,16 @@ class Person < ActiveRecord::Base
      # roommate info
      roommate1 = Person.get_roommate(person.roommate_id1)
      roommate2 = Person.get_roommate(person.roommate_id2)
+     roommate_person1 = Person.find(person.roommate_id1) 
+     roommate_person2 = Person.find(person.roommate_id2) 
+
      if ( person.occupancy > 1 ) 
-       params.push(["Roommate 1",roommate1])
+       #params.push(["Roommate 1",roommate1])
+       params.push(["Roommate 1",roommate1, person.roommate_id1])
      end 
      if ( person.occupancy > 2 ) 
-       params.push(["Roommate 2",roommate2])
+       #params.push(["Roommate 2",roommate2])
+       params.push(["Roommate 2",roommate2, person.roommate_id2])
      end 
 
      params
