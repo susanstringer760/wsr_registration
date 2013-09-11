@@ -29,7 +29,9 @@ You are currently registered for a triple occupancy room, which is equipped with
 The retreat will be held at the YMCA of the Rockies in Estes Park.  If you are interested in participating in a carpool, please send me an email and indicate if you can drive (and number of occupants) or if you need a ride.
 <% end %>
 <p></p>
+<% if (@person.meal_preference.eql?('none')) %>
 Please let me know if you have any food restrictions.  They YMCA can occommodate vegetarian or gluten free meal options. Although there is not a vegan option available, there is a salad bar.
+<% end %>
 <p></p>
 <p></p>
 You will receive additional information closer to the retreat. 
