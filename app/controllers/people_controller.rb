@@ -321,6 +321,26 @@ class PeopleController < ApplicationController
      PersonMailer.registration_report(@email_list,@arr).deliver
    end
 
+   if (report_type.eql?('send_all'))
+      #PersonMailer.registration_confirmation(@person,@params,@notes_hash).deliver
+      person_arr = Array.new
+      results = Person.find(:all, :conditions=>{:first_name=>'Susan'})
+      person_arr.push(results[0])
+      results = Person.find(:all, :conditions=>{:first_name=>'Joanne'})
+      person_arr.push(results[0])
+      #xx = Person.find(:all, :conditions=>{:first_name=>'Joanne'})
+      #@params = Person.show_confirmation(@person, @occupancy_by_id, @prices)
+      #render :text=>"testit: #{person_arr[1].first_name}"
+      #return
+      person_arr.each do |p|
+        @params = Person.show_confirmation(p, @occupancy_by_id, @prices)
+        PersonMailer.registration_confirmation(p,@params,{}).deliver
+      #render :text=>"#{@params}"
+      #return
+      end
+   end
+
+
   end
 
   def xxreport 
