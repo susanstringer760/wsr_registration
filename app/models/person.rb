@@ -81,8 +81,8 @@ class Person < ActiveRecord::Base
      total_due = pricing[occupancy]
      paid_amount = params[:paid_amount].to_f
      scholarship_amount = params[:scholarship_amount].to_f
-     balance_due =  total_due - paid_amount - scholarship_amount 
      wait_list_num = params[:wait_list_num]
+     balance_due =  total_due - paid_amount - scholarship_amount 
 
      # payment status
      payment_status = 'paid' if (balance_due <= 0)
@@ -243,6 +243,7 @@ class Person < ActiveRecord::Base
      paid_amount = person.paid_amount
      balance_due = person.balance_due
      occupancy = occupancy_by_id[person.occupancy.to_s]
+     meal_preference = person.meal_preference
      check_number = person.check_num
      can_drive_num = person.can_drive_num
      needs_ride = person.needs_ride
@@ -282,6 +283,7 @@ class Person < ActiveRecord::Base
      params.push(["Occupancy",  occupancy.to_s]);
      params.push(["Roommate 1",  roommate1.to_s]) if (person.occupancy > 1);
      params.push(["Roommate 2",  roommate2.to_s]) if (person.occupancy > 2);
+     params.push(["Meal preference",  meal_preference.to_s]);
      params.push(["Can drive number",  can_drive_num.to_s]) if (!can_drive_num.blank?)
      params.push(["Needs ride",  needs_ride.to_s]) if (!needs_ride.blank?)
 
@@ -485,6 +487,20 @@ class Person < ActiveRecord::Base
       facilitator_deduction += f.total_due
     end
 
+    # get counts for waitlisted people
+    # so they're not included in totals
+    single = get_count('occupancy', '1')
+    double = get_count('occupancy', '2')
+    triple = get_count('occupancy', '3')
+#    waitlist_deduction = 0
+#    people.each do |p|
+#      if ( !p.wait_list_num.nil?)
+#        # first deduct balance due
+#        return p.balance_due
+#      end
+#    end
+#    return "test2"
+
     # registration stats
     total_due = self.sum('total_due') - facilitator_deduction
     donated_scholarships = self.sum('scholarship_donation')
@@ -502,10 +518,9 @@ class Person < ActiveRecord::Base
     #registered_paid_count = self.get_count('registration_status', 'registered')
     registered_paid_count = self.get_count('registration_status', 'registered') - facilitators.length
     registered_hold_count = self.get_count('registration_status', 'hold')
-    single = get_count('occupancy', '1')
-    double = get_count('occupancy', '2')
-    triple = get_count('occupancy', '3')
-
+    #single = get_count('occupancy', '1')
+    #double = get_count('occupancy', '2')
+    #triple = get_count('occupancy', '3')
 
     arr = Array.new
     arr.push("Total due: #{to_currency(total_due)}")
@@ -547,6 +562,7 @@ class Person < ActiveRecord::Base
       if ( p.scholarship_amount > 0 )
         stats_arr.push("Scholarship: #{p.scholarship_amount}")
       end
+      stats_arr.push("Meal preference: #{p.meal_preference}")
       if ( !p.wait_list_num.nil? )
         stats_arr.push("Wait list #: #{p.wait_list_num}")
       end

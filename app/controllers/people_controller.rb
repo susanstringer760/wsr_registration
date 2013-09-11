@@ -317,8 +317,6 @@ class PeopleController < ApplicationController
      # generate status report
      @date_time = DateTime.now.strftime("%F %T")
      @arr = Person.report(@facilitators, @initial_scholarship,split_report)
-     #render :text=>"qwer: #{@arr}"
-     #return
      @msg = "Report sent to: #{@email_list}"
      PersonMailer.registration_report(@email_list,@arr).deliver
    end

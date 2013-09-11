@@ -119,6 +119,14 @@
     <td><%= f.text_field :wait_list_num, :size=>8 %></td>
   </tr>
   <tr>
+    <td><b>Meal preference: </b>
+    <% if caller.eql?('edit') %>
+      <td><%= f.select(:meal_preference, meal_preference_list, {:selected=>@person.meal_preference} ) %></td>
+    <% else %>
+      <td><%= f.select(:meal_preference, meal_preference_list, {:selected=>'None'} ) %></td>
+    <% end %>
+  </tr>
+  <tr>
     <td><b>Can drive #:</b>
     <td><%= f.text_field :can_drive_num, :size=>8 %></td>
   </tr>
