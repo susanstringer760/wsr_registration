@@ -6,30 +6,12 @@
 <b>Email: <%= @person.email %></b>
 <table border='0'>
   <% @params.each do |p| %>
-    <% if p[0].eql?('Roommate 1') %>
-      <% title = p[0] %>
-      <% value = p[1] %>
-      <% id = p[2] %>
-      <tr>
-        <td><b><%= title %></b></td>
-	<td><%= link_to value.to_s, edit_person_path(id) %><br></td>
-      </tr>
-    <% elsif p[0].eql?('Roommate 2') %>
-      <% title = p[0] %>
-      <% value = p[1] %>
-      <% id = p[2] %>
-      <tr>
-        <td><b><%= title %></b></td>
-	<td><%= link_to value.to_s, edit_person_path(id) %><br></td>
-      </tr>
-    <% else %>
-      <% title = p[0] %>
-      <% value = p[1] %>
-      <tr>
-        <td><b><%= title %></b></td>
-        <td><%= value %></td>
-      </tr>
-    <% end %>
+    <% title = p[0] %>
+    <% value = p[1] %>
+    <tr>
+      <td><b><%= title %></b></td>
+      <td><%= value %></td>
+    </tr>
   <% end %>
 <p></p>
 <tr><td colspan=2><b>Notes<b></td></tr>

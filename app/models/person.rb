@@ -216,16 +216,28 @@ class Person < ActiveRecord::Base
      # roommate info
      roommate1 = Person.get_roommate(person.roommate_id1)
      roommate2 = Person.get_roommate(person.roommate_id2)
-     roommate_person1 = Person.find(person.roommate_id1) 
-     roommate_person2 = Person.find(person.roommate_id2) 
+     if ( person.roommate_id1 > 0 )
+       roommate_person1 = Person.find(person.roommate_id1) 
+     end
+     if ( person.roommate_id2 > 0 )
+       roommate_person2 = Person.find(person.roommate_id2) 
+     end
 
      if ( person.occupancy > 1 ) 
+       params.push(["Roommate 1",roommate1])
+       #arr = ["Roommate 1", roommate1]
+       #arr.push(person.roommate_id1) if (person.roommate_id1 > 0)
+       #params.push(arr)
        #params.push(["Roommate 1",roommate1])
-       params.push(["Roommate 1",roommate1, person.roommate_id1])
+       #params.push
      end 
      if ( person.occupancy > 2 ) 
+       params.push(["Roommate 2",roommate2])
+       #arr = ["Roommate 2", roommate2]
+       #arr.push(person.roommate_id2) if (person.roommate_id2 > 0)
+       #params.push(arr)
        #params.push(["Roommate 2",roommate2])
-       params.push(["Roommate 2",roommate2, person.roommate_id2])
+     #  params.push(["Roommate 2",roommate2, person.roommate_id2])
      end 
 
      params
@@ -404,12 +416,18 @@ class Person < ActiveRecord::Base
     # get a list of people
     sort_by = 'last_name'
     people = self.sort_by(sort_by)
+    people = Person.find(:all, :order=>'roommate_id1,roommate_id2')
     f = File.new(csv_fname, 'w')
-    header = "Name,Email,Phone,Occupancy,Payment status,Roommate1,Roommate2"
+    #header = "Name,Email,Phone,Occupancy,Payment status,Roommate1,Roommate2"
+    header = "Name,Email,Phone,Food,Occupancy,Payment status,Roommate1,Roommate2"
     f.puts(header)
 
     # print out the rooomate info for each person
     people.each do |p|
+      next if (p.occupancy==3 and p.roommate_id1 > 0 and p.roommate_id2 > 0)
+      next if (p.occupancy==2 and p.roommate_id1 > 0)
+      next if (p.occupancy==1)
+      next if (!p.wait_list_num.nil?)
       info = Array.new
       # name
       info.push("#{p.first_name} #{p.last_name}")
@@ -417,6 +435,7 @@ class Person < ActiveRecord::Base
       info.push(p.email)
       # phone
       info.push(p.phone)
+      info.push(p.meal_preference)
       occupancy = occupancy_hash[p.occupancy.to_s]
       info.push(occupancy)
       info.push(p.payment_status)
@@ -436,6 +455,7 @@ class Person < ActiveRecord::Base
       end
       info.push(roommate1)
       info.push(roommate2)
+
 
       str = info.join(',')
       f.puts(str)
