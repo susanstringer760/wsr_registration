@@ -33,6 +33,15 @@ class ApplicationController < ActionController::Base
     @facilitators.push(Person.find_by_last_name('Vielbig'))
     @facilitators.push(Person.find_by_last_name('Bruni'))
 
+    # array of people to exclude when sending out confirmation email
+    @exclude_id = Array.new
+    @facilitators.each do |f|
+      @exclude_id.push(f.id)
+    end
+    tmp = Person.find(:all, :conditions=>{:last_name=>'Daily'})
+    @exclude_id.push(tmp[0])
+
+
   end
 
 #  def set_prices() 
