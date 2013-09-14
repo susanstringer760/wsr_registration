@@ -522,9 +522,16 @@ class Person < ActiveRecord::Base
 
     # get counts for waitlisted people
     # so they're not included in totals
-    single = get_count('occupancy', '1')
-    double = get_count('occupancy', '2')
-    triple = get_count('occupancy', '3')
+    triple_waitlist = Person.count(:all, :conditions => ["registration_status = ? AND occupancy = ?", "wait_list", 3])
+    double_waitlist = Person.count(:all, :conditions => ["registration_status = ? AND occupancy = ?", "wait_list", 2])
+    single_waitlist = Person.count(:all, :conditions => ["registration_status = ? AND occupancy = ?", "wait_list", 1])
+    # room count totals
+    single = get_count('occupancy', '1') - single_waitlist
+    double = get_count('occupancy', '2') - double_waitlist
+    triple = get_count('occupancy', '3') - triple_waitlist
+    #single = get_count('occupancy', '1')
+    #double = get_count('occupancy', '2')
+    #triple = get_count('occupancy', '3')
 #    waitlist_deduction = 0
 #    people.each do |p|
 #      if ( !p.wait_list_num.nil?)
