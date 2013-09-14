@@ -91,14 +91,22 @@ class Person < ActiveRecord::Base
      payment_status = 'hold' if (paid_amount == 0.0)
      #payment_status = 'wait_list' if (!params[:wait_list_num].nil?)
 
-     registration_status = 'registered' if (balance_due <= 0)
-     registration_status = 'pending' if (balance_due > 0)
-     registration_status = 'wait_list' if ( !params[:wait_list_num].nil?)
+     #registration_status = 'registered' if (balance_due <= 0)
+     #registration_status = 'pending' if (balance_due > 0)
+     #registration_status = 'wait_list' if ( !params[:wait_list_num].nil?)
 
      # registration status
      if ( params[:registration_status].eql?('hold'))
        registration_status = params[:registration_status]
      else
+       registration_status = 'registered' if (balance_due <= 0)
+       registration_status = 'pending' if (balance_due > 0)
+     end
+     #if ( !params[:wait_list_num].nil?)
+     if ( !params[:wait_list_num].blank?)
+       registration_status = 'wait_list'
+       balance_due = 0.0
+     else 
        registration_status = 'registered' if (balance_due <= 0)
        registration_status = 'pending' if (balance_due > 0)
      end
@@ -424,9 +432,9 @@ class Person < ActiveRecord::Base
 
     # print out the rooomate info for each person
     people.each do |p|
-      next if (p.occupancy==3 and p.roommate_id1 > 0 and p.roommate_id2 > 0)
-      next if (p.occupancy==2 and p.roommate_id1 > 0)
-      next if (p.occupancy==1)
+      #next if (p.occupancy==3 and p.roommate_id1 > 0 and p.roommate_id2 > 0)
+      #next if (p.occupancy==2 and p.roommate_id1 > 0)
+      #next if (p.occupancy==1)
       next if (!p.wait_list_num.nil?)
       info = Array.new
       # name
