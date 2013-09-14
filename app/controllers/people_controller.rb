@@ -57,9 +57,9 @@ class PeopleController < ApplicationController
   # GET /people/1.json
   def show
 
-  # render :text=>"testit: #{params[:id]}"
-  # return
     @person = Person.find(params[:id])
+   #render :text=>"in show: #{@person.first_name}: #{@person.registration_status}"
+   #return
     #@roommates  = Person.roommate_list()
     @roommates  = Person.roommate_list(@person.id)
 
@@ -110,6 +110,8 @@ class PeopleController < ApplicationController
   # GET /people/1/edit
   def edit
     @person = Person.find(params[:id])
+   #render :text=>"in edit: #{@person.first_name}: #{@person.registration_status}"
+   #return
     #@roommates  = Person.roommate_list()
     @roommates  = Person.roommate_list(@person.id)
     @note_hash = Person.get_notes(@person)
@@ -169,6 +171,8 @@ class PeopleController < ApplicationController
   def update
 
     @person = Person.find(params[:id])
+   #render :text=>"in update: #{@person.first_name}: #{@person.registration_status}"
+   #return
     @roommates  = Person.roommate_list(@person.id)
 
     person_params = params[:person]
@@ -322,19 +326,46 @@ class PeopleController < ApplicationController
    end
 
    if (report_type.eql?('send_all'))
-      #PersonMailer.registration_confirmation(@person,@params,@notes_hash).deliver
-      person_arr = Array.new
-      results = Person.find(:all, :conditions=>{:first_name=>'Susan'})
-      person_arr.push(results[0])
-      person_arr.push(results[0])
-      person_arr.push(results[0])
 
-      #results = Person.find(:all, :conditions=>{:first_name=>'Joanne'})
-      #person_arr.push(results[0])
-      person_arr.each do |p|
-        @params = Person.show_confirmation(p, @occupancy_by_id, @prices)
-        PersonMailer.registration_confirmation(p,@params,{}).deliver
-	sleep(20)
+#xx    # get a hash of notes where key is note type
+#xx    # and value is array note objects
+#xx    @person = Person.find(48)
+#xx    @notes = Person.get_notes(@person)
+#xx#
+#xx    # get the paramaters to be diplayed
+#xx    @notes_hash = Hash.new
+#xx    @params = Array.new
+#xx    @notes_hash['confirmation'] = @notes['confirmation']
+#xx    @params = Person.show_confirmation(@person, @occupancy_by_id, @prices)
+#xx    PersonMailer.registration_confirmation(@person,@params,@notes_hash).deliver
+#xx    # add email log note
+#xx    email_log_note = Person.generate_email_log(@person.id)
+#xx    @person.notes.push(email_log_note)
+#xxrender :text=>"finished with #{@person.first_name}"
+#xxreturn
+
+      # an array of facilitators id #
+      people = Person.find(:all)
+      count = 0
+      people.each do |p|
+        next if @exclude_id.grep(p.id).length > 0
+	next if p.registration_status.eql?('wait_list')
+        @person = p
+        # get a hash of notes where key is note type
+        # and value is array note objects
+        @notes_hash = Hash.new
+        @params = Array.new
+        @notes = Person.get_notes(@person)
+        @notes_hash['confirmation'] = @notes['confirmation']
+        @params = Person.show_confirmation(@person, @occupancy_by_id, @prices)
+        PersonMailer.registration_confirmation(@person,@params,@notes_hash).deliver
+        # add email log note
+        email_log_note = Person.generate_email_log(@person.id)
+        @person.notes.push(email_log_note)
+        #PersonMailer.registration_confirmation(p,@params,{}).deliver
+	sleep(30)
+	#count = count+1
+	#break if (count > 3)
       end
    end
 
