@@ -103,8 +103,14 @@
     <td colspan='2'><b>Registration information</b></td>
   </tr>
   <tr>
-    <td><b>Registration status:</b>
-    <td><%= f.select(:registration_status, registration_status_list) %></td>
+    <td><b>Registration status:</b></td>
+    <% if caller.eql?('edit') %>
+      <% registration_status = registration_status_list[@person.registration_status] %>
+      <td><%= f.select(:registration_status, registration_status_list, {:selected=>@person.registration_status}, :include_blank=>true ) %></td>
+    <% else %>
+      <td><%= f.select(:registration_status, registration_status_list, {:selected=>'None'} ) %></td>
+      <% registration_status = registration_status_list['None'] %>
+    <% end %>
   </tr>
   <tr>
     <td><b>Registration date:</b></td>
