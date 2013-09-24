@@ -4,6 +4,23 @@ class PersonMailer < ActionMailer::Base
   default :from => "susanstringer760@comcast.net"
 
   #def registration_confirmation(person, params, roommate1, roommate2)
+  def final_confirmation(person, params,notes_hash, attachment_fname)
+
+     @person = person
+     @params = params
+     @notes_hash = notes_hash
+     basename=File.basename(attachment_fname)
+     cc_to = "susanstringer760@comcast.net"
+
+     #mail.attachments['WSR_final_confirmation.pdf'] = {:mime_type => 'application/pdf',
+     #                               :content => File.read('/Users/snorman/rails_tmp/wsr_registration/reports/WSR_final_confirmation.pdf')}
+     mail.attachments[basename] = {:mime_type => 'application/pdf',
+                                    :content => File.read(attachment_fname)}
+
+     mail(:to=> @person.email, :cc=>"susanstringer760@comcast.net", :subject => "WSR Confirmation for #{@person.first_name} #{@person.last_name}")
+
+  end
+
   def registration_confirmation(person, params,notes_hash)
 
      @person = person

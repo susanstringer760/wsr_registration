@@ -21,9 +21,9 @@ class ApplicationController < ActionController::Base
     @occupancy_by_value = {'Single'=>'1','Double'=>'2', 'Triple'=>'3' }
 
     # report recipients
-    #@email_list = "sanityhasreturned@gmail.com,sensabama@aol.com,susanstringer760@comcast.net,josiew1158@gmail.com"
+    @email_list = "sanityhasreturned@gmail.com,sensabama@aol.com,susanstringer760@comcast.net,josiew1158@gmail.com"
     #@email_list = "susanstringer760@comcast.net, sensabama@aol.com"
-    @email_list = "susanstringer760@gmail.com"
+    #@email_list = "susanstringer760@gmail.com"
 
     # base scholarship amount
     @initial_scholarship = 300.00
@@ -40,6 +40,8 @@ class ApplicationController < ActionController::Base
     end
     tmp = Person.find(:all, :conditions=>{:last_name=>'Daily'})
     @exclude_id.push(tmp[0])
+
+    @final_confirmation_pdf = "/Users/snorman/rails_tmp/wsr_registration/reports/WSR_final_confirmation.pdf"
 
 
   end

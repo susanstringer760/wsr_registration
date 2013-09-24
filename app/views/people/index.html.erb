@@ -71,7 +71,6 @@
   </tr>
 
 <% @people.each do |person| %>
-  <% next if person.registration_status.eql?('wait_list')%>
   <tr>
     <td>
     <% if !person.scholarship_applicant %>

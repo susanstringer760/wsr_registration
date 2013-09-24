@@ -421,6 +421,30 @@ class Person < ActiveRecord::Base
 
   def self.create_roommate_report(csv_fname, occupancy_hash)
 
+    # temporary to print out all email addresses for mass mailing
+    f = File.new('/Users/snorman/rails_tmp/wsr_registration/reports/email.list', 'w')
+    email_arr = Array.new
+    blank_arr = Array.new
+    people = Person.find(:all)
+    count = 0
+    people.each do |p|
+      if (p.email.blank?)
+        name = "  #{p.first_name} #{p.last_name}"
+        blank_arr.push(name)
+      else
+        email_arr.push(p.email)
+      end
+      count = count+1
+    end
+    email_str = email_arr.join(',')
+    f.puts(email_str)
+    f.puts("Email address not available")
+    blank_arr.each do |p|
+      f.puts(p)
+    end
+    f.close
+    return
+
     # get a list of people
     sort_by = 'last_name'
     people = self.sort_by(sort_by)
@@ -532,7 +556,7 @@ class Person < ActiveRecord::Base
     #single = get_count('occupancy', '1')
     #double = get_count('occupancy', '2')
     #triple = get_count('occupancy', '3')
-#    waitlist_deduction = 0
+#   waitlist_deduction = 0
 #    people.each do |p|
 #      if ( !p.wait_list_num.nil?)
 #        # first deduct balance due
@@ -541,19 +565,32 @@ class Person < ActiveRecord::Base
 #    end
 #    return "test2"
 
-    # registration stats
-    total_due = self.sum('total_due') - facilitator_deduction
+    # registration stats 
+    # don't include wait listed people in total due
+    wait_list_total_due = Person.sum(:total_due, :conditions=>{:registration_status=>'wait_list'})
+    total_due = self.sum('total_due') - facilitator_deduction - wait_list_total_due
+
+    # total due
+    #total_due = self.sum('total_due') - facilitator_deduction
+
+    # scholarship info
     donated_scholarships = self.sum('scholarship_donation')
     initial_scholarship_amount = initial_scholarship
     total_scholarship_applicants = self.get_count('scholarship_applicant', '1')
     total_scholarship_given = self.sum('scholarship_amount')
+    total_available_scholarships = initial_scholarship_amount + donated_scholarships - total_scholarship_given
+
+    # balance due
+    # don't need to deduct waitlist since their balance due is set to 0
     #total_balance_due = self.sum('balance_due') + total_scholarship_given
     total_balance_due = self.sum('balance_due')
-    total_available_scholarships = initial_scholarship_amount + donated_scholarships - total_scholarship_given
+
     # deduct donated scholarships from total paid so it isn't include 2 times in report
-    #total_paid = self.sum('paid_amount') - facilitator_deduction - self.sum('scholarship_donation')
-    total_paid = self.sum('paid_amount') - facilitator_deduction - self.sum('scholarship_donation') + self.sum('scholarship_amount')
-    total_registered = Person.all.length
+    total_paid = self.sum('paid_amount') - facilitator_deduction - self.sum('scholarship_donation')
+    #total_paid = self.sum('paid_amount') - facilitator_deduction - self.sum('scholarship_donation') + self.sum('scholarship_amount')
+
+    # number on wait list
+    total_registered = Person.all.length - 
     registered_pending_count = self.get_count('registration_status', 'pending')
     #registered_paid_count = self.get_count('registration_status', 'registered')
     registered_paid_count = self.get_count('registration_status', 'registered') - facilitators.length

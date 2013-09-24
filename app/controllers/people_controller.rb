@@ -42,6 +42,8 @@ class PeopleController < ApplicationController
 
     @totals_hash = Hash.new
     @totals_hash['balance'] = balance_arr
+#render :text=>"asdf: #{balance_arr}"
+#return
     @totals_hash['scholarship'] = scholarship_arr
     @totals_hash['registered'] = registered_arr
     @totals_hash['occupancy'] = occupancy_arr
@@ -203,6 +205,8 @@ class PeopleController < ApplicationController
 
   def confirmation 
 
+    confirmation_type = params[:confirmation_type]
+
     # send confirmation email
     @person = Person.find(params[:id])
     @roommates  = Person.roommate_list(@person.id)
@@ -219,7 +223,13 @@ class PeopleController < ApplicationController
     @notes_hash['confirmation'] = notes['confirmation']
     @params = Person.show_confirmation(@person, @occupancy_by_id, @prices)
 
-    PersonMailer.registration_confirmation(@person,@params,@notes_hash).deliver
+    if (confirmation_type.eql?('final'))
+      PersonMailer.final_confirmation(@person,@params,@notes_hash,@final_confirmation_pdf).deliver
+    end
+    if (confirmation_type.eql?('confirm'))
+      PersonMailer.registration_confirmation(@person,@params,@notes_hash).deliver
+    end
+
 
     # add email log note
     email_log_note = Person.generate_email_log(@person.id)
@@ -327,22 +337,21 @@ class PeopleController < ApplicationController
 
    if (report_type.eql?('send_all'))
 
-#xx    # get a hash of notes where key is note type
-#xx    # and value is array note objects
-#xx    @person = Person.find(48)
-#xx    @notes = Person.get_notes(@person)
-#xx#
-#xx    # get the paramaters to be diplayed
-#xx    @notes_hash = Hash.new
-#xx    @params = Array.new
-#xx    @notes_hash['confirmation'] = @notes['confirmation']
-#xx    @params = Person.show_confirmation(@person, @occupancy_by_id, @prices)
-#xx    PersonMailer.registration_confirmation(@person,@params,@notes_hash).deliver
-#xx    # add email log note
-#xx    email_log_note = Person.generate_email_log(@person.id)
-#xx    @person.notes.push(email_log_note)
-#xxrender :text=>"finished with #{@person.first_name}"
-#xxreturn
+#    # get a hash of notes where key is note type
+#    # and value is array note objects
+#    @person = Person.find(48)
+#    @notes = Person.get_notes(@person)
+##
+#    # get the paramaters to be diplayed
+#    @notes_hash = Hash.new
+#    @params = Array.new
+#    @notes_hash['confirmation'] = @notes['confirmation']
+#    @params = Person.show_confirmation(@person, @occupancy_by_id, @prices)
+#    #PersonMailer.registration_confirmation(@person,@params,@notes_hash).deliver
+#    PersonMailer.final_confirmation(@person,@params,@notes_hash, @final_confirmation_pdf).deliver
+#    # add email log note
+#    email_log_note = Person.generate_email_log(@person.id)
+#    @person.notes.push(email_log_note)
 
       # an array of facilitators id #
       people = Person.find(:all)
