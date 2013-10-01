@@ -319,6 +319,22 @@ class PeopleController < ApplicationController
    report_type = params[:report_type]
    split_report = params[:split_report]
 
+   if ( report_type.eql?('carpool'))
+    date_time = Time.now.strftime("%Y%m%d_%H%M") 
+    fname = "carpool_report.#{date_time}.csv"
+    fname = "WSR_carpool.csv"
+    full_path = Rails.root.join('reports', fname)
+    Person.create_carpool_report(full_path, 'last_name')
+   end
+
+   if ( report_type.eql?('registration') )
+    date_time = Time.now.strftime("%Y%m%d_%H%M") 
+    fname = "final_registration.#{date_time}.csv"
+    fname = "WSR_final_registration.csv"
+    full_path = Rails.root.join('reports', fname)
+    Person.create_final_registration_report(full_path, @occupancy_by_id)
+   end
+
    if (report_type.eql?('roommate'))
     date_time = Time.now.strftime("%Y%m%d_%H%M") 
     #fname = "roommates.csv"

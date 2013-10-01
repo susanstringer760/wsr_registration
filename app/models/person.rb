@@ -420,31 +420,121 @@ class Person < ActiveRecord::Base
 
   end
 
+  def self.create_final_registration_report(csv_fname, occupancy_hash)
+
+    # get a list of people
+    sort_by = 'last_name'
+    people = self.sort_by(sort_by)
+    #people = Person.find(:all, :order=>'roommate_id1,roommate_id2')
+    f = File.new(csv_fname, 'w')
+    header = "Name,Phone,Food,Occupancy,Registration status,Balance due,Roommate1,Roommate2"
+    f.puts(header)
+
+    # print out the rooomate info for each person
+    people.each do |p|
+      next if (!p.wait_list_num.nil?)
+      info = Array.new
+      # name
+      info.push("#{p.first_name} #{p.last_name}")
+      # phone
+      info.push(p.phone)
+      # meal preference
+      info.push(p.meal_preference)
+      # occupancy
+      occupancy = occupancy_hash[p.occupancy.to_s]
+      info.push(occupancy)
+      # registration status
+      info.push(p.registration_status)
+      # balance due
+      info.push(p.balance_due)
+      # roommate info
+      roommate1 = self.get_roommate(p.roommate_id1)
+      roommate2 = self.get_roommate(p.roommate_id2)
+      if ( occupancy.downcase.eql?('single'))
+        roommate1 = 'N/A'
+        roommate2 = 'N/A'
+      end
+      if (occupancy.downcase.eql?('double'))
+        roommate1 = 'TBD' if p.roommate_id1==0;
+        roommate2 = 'N/A'
+      end
+      if (occupancy.downcase.eql?('triple'))
+        roommate1 = 'TBD' if p.roommate_id1==0;
+        roommate2 = 'TBD' if p.roommate_id2==0;
+      end
+      info.push(roommate1)
+      info.push(roommate2)
+
+
+      str = info.join(',')
+      f.puts(str)
+
+    end
+
+    f.close
+
+    return
+
+  end
+
+  def self.create_carpool_report(csv_fname, sort_by)
+
+    people = self.sort_by(sort_by)
+
+    f = File.new(csv_fname, 'w')
+    #header = "Name,Email,Phone,Occupancy,Payment status,Roommate1,Roommate2"
+    header = "Name,Phone,Email,Can drive #, Needs ride, Depart time"
+    f.puts(header)
+
+    people.each do |p|
+
+      next if (p.registration_status.eql?('wait_list'))
+      info = Array.new
+      # name
+      info.push("#{p.first_name} #{p.last_name}")
+      # phone
+      info.push(p.phone)
+      # email
+      info.push(p.email)
+      # can drive
+      info.push(p.can_drive_num)
+      # needs ride
+      info.push(p.needs_ride)
+      str = info.join(',')
+      f.puts(str)
+
+    end
+
+    f.close
+    return
+
+  end
+
   def self.create_roommate_report(csv_fname, occupancy_hash)
 
     # temporary to print out all email addresses for mass mailing
-    f = File.new('/Users/snorman/rails_tmp/wsr_registration/reports/email.list', 'w')
-    email_arr = Array.new
-    blank_arr = Array.new
-    people = Person.find(:all)
-    count = 0
-    people.each do |p|
-      if (p.email.blank?)
-        name = "  #{p.first_name} #{p.last_name}"
-        blank_arr.push(name)
-      else
-        email_arr.push(p.email)
-      end
-      count = count+1
-    end
-    email_str = email_arr.join(',')
-    f.puts(email_str)
-    f.puts("Email address not available")
-    blank_arr.each do |p|
-      f.puts(p)
-    end
-    f.close
-    return
+##    f = File.new('/Users/snorman/rails_tmp/wsr_registration/reports/email.list', 'w')
+##    email_arr = Array.new
+##    blank_arr = Array.new
+##    people = Person.find(:all)
+##    count = 0
+##    people.each do |p|
+##      if (p.email.blank?)
+##        name = "  #{p.first_name} #{p.last_name}"
+##        blank_arr.push(name)
+##      else
+##        email_arr.push(p.email)
+##      end
+##      count = count+1
+##    end
+##    email_str = email_arr.join(',')
+##    f.puts(email_str)
+##    f.puts("Email address not available")
+##    blank_arr.each do |p|
+##      f.puts(p)
+##    end
+##    f.close
+##    return
 
     # get a list of people
     sort_by = 'last_name'
