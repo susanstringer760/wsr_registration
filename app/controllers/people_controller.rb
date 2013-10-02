@@ -224,7 +224,7 @@ class PeopleController < ApplicationController
     @params = Person.show_confirmation(@person, @occupancy_by_id, @prices)
 
     if (confirmation_type.eql?('final'))
-      PersonMailer.final_confirmation(@person,@params,@notes_hash,@final_confirmation_pdf).deliver
+      PersonMailer.final_confirmation(@person,@params,@notes_hash,@wsr_logistics_pdf).deliver
     end
     if (confirmation_type.eql?('confirm'))
       PersonMailer.registration_confirmation(@person,@params,@notes_hash).deliver

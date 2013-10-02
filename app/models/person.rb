@@ -681,7 +681,8 @@ class Person < ActiveRecord::Base
     #total_paid = self.sum('paid_amount') - facilitator_deduction - self.sum('scholarship_donation') + self.sum('scholarship_amount')
 
     # number on wait list
-    total_registered = Person.all.length - 
+    wait_list_count = self.get_count('registration_status', 'wait_list');
+    total_registered = Person.all.length - wait_list_count
     registered_pending_count = self.get_count('registration_status', 'pending')
     #registered_paid_count = self.get_count('registration_status', 'registered')
     registered_paid_count = self.get_count('registration_status', 'registered') - facilitators.length

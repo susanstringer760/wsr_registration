@@ -1,8 +1,10 @@
 Hi <%= @person.first_name %>,
 <p></p>
-We hope that you have received the information regarding the relocation of the retreat.  If you did not, please check your spam folder.
+This is your final confirmation for the Women’s Spiritual Retreat on October 4-6 at the YMCA of the Rockies in Estes Park. Please review this information and let me know if there are any updates. In the next few days you will receive a separate email with information regarding general information and the retreat schedule. Attached please find the logistical information.
 <p></p>
-This is the final confirmation for the 2013 Women's Spiritual Retreat. Please review the information below and let me know if there are any changes.
+At this point, you should have received an email from Joanne with any updates concerning the retreat.  If you have not received this email, please check your spam folder and contact Joanne (sensabama@aol.com) as soon as possible.
+<p></p>
+Please review the information below and let me know if there are any changes.
 <p></p>
 <% @params.each do |p| %>
   <% title = p[0] %>
@@ -14,17 +16,14 @@ This is the final confirmation for the 2013 Women's Spiritual Retreat. Please re
 You are currently registered for a triple occupancy room, which is equipped with 2 queen beds and 1 pullout couch.
 <% end %>
 <p></p>
-<% if ( (@person.needs_ride.blank?) && (@person.can_drive_num.blank?) ) %>
-The retreat will be held at the YMCA of the Rockies (Snow Mountain Ranch) in Granby, CO.  If you are interested in participating in a carpool please send me an email and indicate if you can drive (and number of occupants) or if you need a ride. If you can drive it would be helpful to know what time you would be leaving/returning.
-<% end %>
-<p></p>
+
 <% if (@person.meal_preference.eql?('gluten_free')) %>
 You have requested a gluten free meal option.  While the YMCA offers gluten free options, the selection may be limited.  Also please note that the food is not prepared in a separate kitchen.
 <% end %>
 <p></p>
 Please email myself or Joanne (sensabama@aol.com) if you have further questions.
 <p></p>
-Thanks! 
+Thanks! We're looking forward to spending this special time with you :-)
 <p></p>
 Susan
 <p></p>

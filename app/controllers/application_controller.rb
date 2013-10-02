@@ -23,7 +23,7 @@ class ApplicationController < ActionController::Base
     # report recipients
     @email_list = "sanityhasreturned@gmail.com,sensabama@aol.com,susanstringer760@comcast.net,josiew1158@gmail.com"
     #@email_list = "susanstringer760@comcast.net, sensabama@aol.com"
-    #@email_list = "susanstringer760@gmail.com"
+    #@email_list = "susanstringer760@gmail.com,snorman@ucar.edu"
 
     # base scholarship amount
     @initial_scholarship = 300.00
@@ -38,10 +38,10 @@ class ApplicationController < ActionController::Base
     @facilitators.each do |f|
       @exclude_id.push(f.id)
     end
-    tmp = Person.find(:all, :conditions=>{:last_name=>'Daily'})
-    @exclude_id.push(tmp[0])
+    #tmp = Person.find(:all, :conditions=>{:last_name=>'Daily'})
+    #@exclude_id.push(tmp[0])
 
-    @final_confirmation_pdf = "/Users/snorman/rails_tmp/wsr_registration/reports/WSR_final_confirmation.pdf"
+    @wsr_logistics_pdf = "/Users/snorman/rails_tmp/wsr_registration/reports/WSR_logistics.pdf"
 
 
   end
