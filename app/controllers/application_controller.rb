@@ -38,8 +38,14 @@ class ApplicationController < ActionController::Base
     @facilitators.each do |f|
       @exclude_id.push(f.id)
     end
-    #tmp = Person.find(:all, :conditions=>{:last_name=>'Daily'})
-    #@exclude_id.push(tmp[0])
+    person = Person.find(:all, :conditions=>{:last_name=>'Weaver'})
+    @exclude_id.push(person[0].id)
+    person = Person.find(:all, :conditions=>{:last_name=>'Flynn'})
+    @exclude_id.push(person[0].id)
+    person = Person.find(:all, :conditions=>{:last_name=>'Richardson'})
+    @exclude_id.push(person[0].id)
+    person = Person.find(:all, :conditions=>{:last_name=>'bbb'})
+    @exclude_id.push(person[0].id)
 
     @wsr_logistics_pdf = "/Users/snorman/rails_tmp/wsr_registration/reports/WSR_logistics.pdf"
 

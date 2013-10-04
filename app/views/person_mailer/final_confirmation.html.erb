@@ -1,10 +1,12 @@
 Hi <%= @person.first_name %>,
 <p></p>
-This is your final confirmation for the Women’s Spiritual Retreat on October 4-6 at the YMCA of the Rockies in Estes Park. Please review this information and let me know if there are any updates. In the next few days you will receive a separate email with information regarding general information and the retreat schedule. Attached please find the logistical information.
+Wahoo!  The retreat is finally upon us and we are looking forward to sharing this beautiful experience with you.
+<p></p>
+This is your final confirmation for the Women’s Spiritual Retreat on October 4-6 at the YMCA of the Rockies in Estes Park. You will receive a separate email regarding general information and the retreat schedule this later today. Attached please find the logistical information.
 <p></p>
 At this point, you should have received an email from Joanne with any updates concerning the retreat.  If you have not received this email, please check your spam folder and contact Joanne (sensabama@aol.com) as soon as possible.
 <p></p>
-Please review the information below and let me know if there are any changes.
+This is your registration information.  Please review and let me know if there are any changes.
 <p></p>
 <% @params.each do |p| %>
   <% title = p[0] %>
@@ -16,14 +18,13 @@ Please review the information below and let me know if there are any changes.
 You are currently registered for a triple occupancy room, which is equipped with 2 queen beds and 1 pullout couch.
 <% end %>
 <p></p>
-
 <% if (@person.meal_preference.eql?('gluten_free')) %>
 You have requested a gluten free meal option.  While the YMCA offers gluten free options, the selection may be limited.  Also please note that the food is not prepared in a separate kitchen.
 <% end %>
 <p></p>
-Please email myself or Joanne (sensabama@aol.com) if you have further questions.
+If you have not already arranged for a carpool and would like to participate, please email myself or Joanne (sensabama@aol.com).  It would be helpful to include 'car pool' in the subject line.
 <p></p>
-Thanks! We're looking forward to spending this special time with you :-)
+Thanks! We're looking forward to seeing you :-)
 <p></p>
 Susan
 <p></p>

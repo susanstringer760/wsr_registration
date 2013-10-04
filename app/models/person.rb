@@ -510,9 +510,47 @@ class Person < ActiveRecord::Base
 
   end
 
-  def self.create_roommate_report(csv_fname, occupancy_hash)
+  def self.create_email_list(fname,exclude_id)
 
     # temporary to print out all email addresses for mass mailing
+    people = Person.find(:all)
+    f = File.new(fname, 'w')
+    email_arr = Array.new
+    blank_arr = Array.new
+    people = Person.find(:all)
+    count = 0
+    people.each do |p|
+      next if (p.email.blank?)
+      next if exclude_id.grep(p.id).length > 0
+      next if p.registration_status.eql?('wait_list')
+      if (p.email.blank?)
+        name = "  #{p.first_name} #{p.last_name}"
+        blank_arr.push(name)
+      else
+        email_arr.push(p.email)
+      end
+    end
+    email_str = email_arr.join(',')
+    f.puts(email_str)
+    exclude_arr = Array.new
+    exclude_id.each do |id|
+      person = Person.find(id)
+      name = "  #{person.first_name} #{person.last_name}: #{person.email}"
+      exclude_arr.push(name)
+    end
+    f.puts("Excluded")
+    exclude_arr.each do |p|
+      f.puts(p)
+    end
+    f.close
+    return
+
+
+  end
+
+  def self.create_roommate_report(csv_fname, occupancy_hash,exclude_id)
+
+##    # temporary to print out all email addresses for mass mailing
 ##    f = File.new('/Users/snorman/rails_tmp/wsr_registration/reports/email.list', 'w')
 ##    email_arr = Array.new
 ##    blank_arr = Array.new

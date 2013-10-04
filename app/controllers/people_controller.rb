@@ -319,6 +319,16 @@ class PeopleController < ApplicationController
    report_type = params[:report_type]
    split_report = params[:split_report]
 
+   if ( report_type.eql?('email_list')) 
+    date_time = Time.now.strftime("%Y%m%d_%H%M") 
+    fname = "WSR_email_list.#{date_time}.txt"
+    full_path = Rails.root.join('reports', fname)
+    #Person.create_email_list(full_path, @exclude_id)
+    xx = Person.create_email_list(full_path, @exclude_id)
+    render :text=>"asdf: #{xx}"
+    return
+   end
+
    if ( report_type.eql?('carpool'))
     date_time = Time.now.strftime("%Y%m%d_%H%M") 
     fname = "carpool_report.#{date_time}.csv"
@@ -364,17 +374,28 @@ class PeopleController < ApplicationController
 #    @notes_hash['confirmation'] = @notes['confirmation']
 #    @params = Person.show_confirmation(@person, @occupancy_by_id, @prices)
 #    #PersonMailer.registration_confirmation(@person,@params,@notes_hash).deliver
-#    PersonMailer.final_confirmation(@person,@params,@notes_hash, @final_confirmation_pdf).deliver
+#     PersonMailer.final_confirmation(@person,@params,@notes_hash, @final_confirmation_pdf).deliver
 #    # add email log note
 #    email_log_note = Person.generate_email_log(@person.id)
 #    @person.notes.push(email_log_note)
-
+      #fname = "/Users/snorman/rails_tmp/wsr_registration/notes/test.out"
+      #f = File.new(fname, 'w')
       # an array of facilitators id #
       people = Person.find(:all)
       count = 0
+
+      #people = Array.new
+      #xx = Person.find(56)
+      #people.push(xx)
+      #xx = Person.find(48)
+      #people.push(xx)
+
       people.each do |p|
         next if @exclude_id.grep(p.id).length > 0
 	next if p.registration_status.eql?('wait_list')
+	#f.puts("#{p.first_name} #{p.last_name}: #{p.registration_status}")
+	#next
+
         @person = p
         # get a hash of notes where key is note type
         # and value is array note objects
@@ -383,15 +404,17 @@ class PeopleController < ApplicationController
         @notes = Person.get_notes(@person)
         @notes_hash['confirmation'] = @notes['confirmation']
         @params = Person.show_confirmation(@person, @occupancy_by_id, @prices)
-        PersonMailer.registration_confirmation(@person,@params,@notes_hash).deliver
+        #PersonMailer.registration_confirmation(@person,@params,@notes_hash).deliver
+        PersonMailer.final_confirmation(@person,@params,@notes_hash,@wsr_logistics_pdf).deliver
         # add email log note
         email_log_note = Person.generate_email_log(@person.id)
         @person.notes.push(email_log_note)
-        #PersonMailer.registration_confirmation(p,@params,{}).deliver
+        ##PersonMailer.registration_confirmation(p,@params,{}).deliver
 	sleep(30)
 	#count = count+1
 	#break if (count > 3)
       end
+      #f.close
    end
 
 
