@@ -15,10 +15,12 @@
 /tmp
 
 # Ignore database setup since it contains passwords
-/config/database.yml
+*.yml
+#/config/database.yml
 
 # Ignore the mail setup file
 /config/initializers/setup_mail.rb
+
 # Ignore the constants 
 /config/initializers/wsr_constants.rb
 
