@@ -22,17 +22,19 @@ class ApplicationController < ActionController::Base
     @initial_scholarship = WsrRegistration::Application.config.initial_scholarship
     
     # facilitators
-    facilitators = Array.new
-    facilitators.push(Person.find_by_last_name('Vielbig'))
-    facilitators.push(Person.find_by_last_name('Bruni'))
-    @facilitators = WsrRegistration::Application.config.facilitatiors
+    @facilitators = Array.new
+    @facilitators_last_name = WsrRegistration::Application.config.facilitators_last_name
+    @facilitators_last_name.each do |name|
+      @facilitators.push(Person.find_by_last_name(name))
+    end
     
     # array of people to exclude when sending out confirmation email
-    exclude_id = Array.new
-    facilitators.each do |f|
-      exclude_id.push(f.id)
+    @exclude_id = Array.new
+    @facilitators.each do |f|
+      @exclude_id.push(f.id)
     end
-    @exclude_id = WsrRegistration::Application.config.exclude_id
+    #@exclude_id = WsrRegistration::Application.config.exclude_id
+
     @final_confirmation_pdf = WsrRegistration::Application.config.final_confirmation_pdf
 
 
