@@ -4,9 +4,9 @@ class PeopleController < ApplicationController
   # GET /people.json
   def index
 
-  params[:sort_by] ?
-    sort_by = params[:sort_by] :
-    sort_by = 'last_name'
+    params[:sort_by] ?
+      sort_by = params[:sort_by] :
+      sort_by = 'first_name'
 
     # list of people
     # @people = Person.sort_by(sort_by) 
@@ -42,11 +42,10 @@ class PeopleController < ApplicationController
 
     @totals_hash = Hash.new
     @totals_hash['balance'] = balance_arr
-#render :text=>"asdf: #{balance_arr}"
-#return
     @totals_hash['scholarship'] = scholarship_arr
     @totals_hash['registered'] = registered_arr
     @totals_hash['occupancy'] = occupancy_arr
+
 
     respond_to do |format|
       format.html # index.html.erb

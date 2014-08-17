@@ -19,6 +19,8 @@
 
 # Ignore the mail setup file
 /config/initializers/setup_mail.rb
+# Ignore the constants 
+/config/initializers/wsr_constants.rb
 
 # Ignore notes
 /notes
@@ -32,3 +34,5 @@
 *.save*
 *.ori*
 .*.swp
+
+vendor/ruby
