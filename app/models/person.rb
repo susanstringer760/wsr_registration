@@ -76,57 +76,60 @@ class Person < ActiveRecord::Base
 
      # calculate all the price dependent values
 
-     # balance due
+     # update parameters 
+     #occupancy = params[:occupancy].to_i - 1
      occupancy = params[:occupancy].to_i
-     total_due = pricing[occupancy]
+     #balance_due = params[:balance_due]
+     balance_due = 0.0
+     payment_status = params[:payment_status]
+     registration_status = params[:registration_status]
+     wait_list_num = params[:wait_list_num].to_i
+     total_due = 0.0 
      paid_amount = params[:paid_amount].to_f
-     scholarship_amount = params[:scholarship_amount].to_f
-     wait_list_num = params[:wait_list_num]
-     balance_due =  total_due - paid_amount - scholarship_amount 
+     #scholarship_amount = params[:scholarship_amount].to_f
+     #scholarship_donation = params[:scholarship_donation].to_f
+     scholarship_amount = 0.0
+     scholarship_donation = 0.0
+     scholarship_applicant = (params[:scholarship_applicant] == 0 ) ? "false" : "true"
 
-     # payment status
-     payment_status = 'paid' if (balance_due <= 0)
-     payment_status = 'pending' if (balance_due > 0 )
-     #payment_status = 'hold' if (balance_due == total_due  )
-     payment_status = 'hold' if (paid_amount == 0.0)
-     #payment_status = 'wait_list' if (!params[:wait_list_num].nil?)
-
-     #registration_status = 'registered' if (balance_due <= 0)
-     #registration_status = 'pending' if (balance_due > 0)
-     #registration_status = 'wait_list' if ( !params[:wait_list_num].nil?)
-
-     # registration status
-     if ( params[:registration_status].eql?('hold'))
-       registration_status = params[:registration_status]
-     else
-       registration_status = 'registered' if (balance_due <= 0)
-       registration_status = 'pending' if (balance_due > 0)
-     end
-     #if ( !params[:wait_list_num].nil?)
-     if ( !params[:wait_list_num].blank?)
-       registration_status = 'wait_list'
-       balance_due = 0.0
+     if ( registration_status.eql?('facilitator')) 
+       payment_status = 'paid'
+       scholarship_donation = paid_amount
      else 
-       registration_status = 'registered' if (balance_due <= 0)
-       registration_status = 'pending' if (balance_due > 0)
+       total_due = pricing[occupancy-1]
+       balance_due =  total_due - paid_amount - scholarship_amount 
+       if ( balance_due <= 0)
+         registration_status = 'registered'
+	 scholarship_donation = balance_due.abs
+	 balance_due = 0.0
+       else
+         #registration_status = 'pending';
+         registration_status = 'pending' unless registration_status.eql?('hold');
+         payment_status = 'partial';
+       end
+       if ( wait_list_num > 0 )
+         balance_due = 0.0
+	 total_due = 0.0
+	 registration_status = 'wait_list'
+	 scholarship_donation = 0.0
+       end
      end
 
-     # set the new values
-     if ( balance_due <= 0 )
-       params[:scholarship_donation] = balance_due.abs 
-       balance_due = 0
-     end
-
-     params[:balance_due] = balance_due.to_f
+     params[:occupancy] =  occupancy
+     params[:balance_due] = balance_due
      params[:payment_status] = payment_status
      params[:registration_status] = registration_status
-     params[:total_due] = total_due 
+     params[:wait_list_num] = wait_list_num
+     params[:total_due] = total_due
+     params[:paid_amount] = paid_amount
+     params[:scholarship_amount] = scholarship_amount
+     params[:scholarship_donation] = scholarship_donation
+     params[:scholarship_applicant] = scholarship_applicant
 
      params
 
    end
 
-   #def self.balance_due(params, pricing)
    def self.balance_due(amount_paid, total_price)
 
      # calculate the balance due
@@ -420,159 +423,31 @@ class Person < ActiveRecord::Base
 
   end
 
-  def self.create_final_registration_report(csv_fname, occupancy_hash)
-
-    # get a list of people
-    sort_by = 'last_name'
-    people = self.sort_by(sort_by)
-    #people = Person.find(:all, :order=>'roommate_id1,roommate_id2')
-    f = File.new(csv_fname, 'w')
-    header = "Name,Phone,Food,Occupancy,Registration status,Balance due,Roommate1,Roommate2"
-    f.puts(header)
-
-    # print out the rooomate info for each person
-    people.each do |p|
-      next if (!p.wait_list_num.nil?)
-      info = Array.new
-      # name
-      info.push("#{p.first_name} #{p.last_name}")
-      # phone
-      info.push(p.phone)
-      # meal preference
-      info.push(p.meal_preference)
-      # occupancy
-      occupancy = occupancy_hash[p.occupancy.to_s]
-      info.push(occupancy)
-      # registration status
-      info.push(p.registration_status)
-      # balance due
-      info.push(p.balance_due)
-      # roommate info
-      roommate1 = self.get_roommate(p.roommate_id1)
-      roommate2 = self.get_roommate(p.roommate_id2)
-      if ( occupancy.downcase.eql?('single'))
-        roommate1 = 'N/A'
-        roommate2 = 'N/A'
-      end
-      if (occupancy.downcase.eql?('double'))
-        roommate1 = 'TBD' if p.roommate_id1==0;
-        roommate2 = 'N/A'
-      end
-      if (occupancy.downcase.eql?('triple'))
-        roommate1 = 'TBD' if p.roommate_id1==0;
-        roommate2 = 'TBD' if p.roommate_id2==0;
-      end
-      info.push(roommate1)
-      info.push(roommate2)
-
-
-      str = info.join(',')
-      f.puts(str)
-
-    end
-
-    f.close
-
-    return
-
-  end
-
-  def self.create_carpool_report(csv_fname, sort_by)
-
-    people = self.sort_by(sort_by)
-
-    f = File.new(csv_fname, 'w')
-    #header = "Name,Email,Phone,Occupancy,Payment status,Roommate1,Roommate2"
-    header = "Name,Phone,Email,Can drive #, Needs ride, Depart time"
-    f.puts(header)
-
-    people.each do |p|
-
-      next if (p.registration_status.eql?('wait_list'))
-      info = Array.new
-      # name
-      info.push("#{p.first_name} #{p.last_name}")
-      # phone
-      info.push(p.phone)
-      # email
-      info.push(p.email)
-      # can drive
-      info.push(p.can_drive_num)
-      # needs ride
-      info.push(p.needs_ride)
-      str = info.join(',')
-      f.puts(str)
-
-    end
-
-    f.close
-    return
-
-  end
-
-  def self.create_email_list(fname,exclude_id)
+  def self.create_roommate_report(csv_fname, occupancy_hash)
 
     # temporary to print out all email addresses for mass mailing
-    people = Person.find(:all)
-    f = File.new(fname, 'w')
+    f = File.new('/Users/snorman/rails_tmp/wsr_registration/reports/email.list', 'w')
     email_arr = Array.new
     blank_arr = Array.new
     people = Person.find(:all)
     count = 0
     people.each do |p|
-      next if (p.email.blank?)
-      next if exclude_id.grep(p.id).length > 0
-      next if p.registration_status.eql?('wait_list')
       if (p.email.blank?)
         name = "  #{p.first_name} #{p.last_name}"
         blank_arr.push(name)
       else
         email_arr.push(p.email)
       end
+      count = count+1
     end
     email_str = email_arr.join(',')
     f.puts(email_str)
-    exclude_arr = Array.new
-    exclude_id.each do |id|
-      person = Person.find(id)
-      name = "  #{person.first_name} #{person.last_name}: #{person.email}"
-      exclude_arr.push(name)
-    end
-    f.puts("Excluded")
-    exclude_arr.each do |p|
+    f.puts("Email address not available")
+    blank_arr.each do |p|
       f.puts(p)
     end
     f.close
     return
-
-
-  end
-
-  def self.create_roommate_report(csv_fname, occupancy_hash,exclude_id)
-
-##    # temporary to print out all email addresses for mass mailing
-##    f = File.new('/Users/snorman/rails_tmp/wsr_registration/reports/email.list', 'w')
-##    email_arr = Array.new
-##    blank_arr = Array.new
-##    people = Person.find(:all)
-##    count = 0
-##    people.each do |p|
-##      if (p.email.blank?)
-##        name = "  #{p.first_name} #{p.last_name}"
-##        blank_arr.push(name)
-##      else
-##        email_arr.push(p.email)
-##      end
-##      count = count+1
-##    end
-##    email_str = email_arr.join(',')
-##    f.puts(email_str)
-##    f.puts("Email address not available")
-##    blank_arr.each do |p|
-##      f.puts(p)
-##    end
-##    f.close
-##    return
 
     # get a list of people
     sort_by = 'last_name'
@@ -659,11 +534,541 @@ class Person < ActiveRecord::Base
 
   end
 
+
+
+  def self.generate_csv(facilitators, occupancy_hash, initial_scholarship, csv_fname)
+
+    file_id = DateTime.now.strftime("%Y%m%d_%H%M")
+    fname_only = File.basename(csv_fname)
+    dir = File.dirname(csv_fname)
+    csv_fname = "#{dir}/#{file_id}.#{fname_only}"
+    notes_fname = csv_fname.gsub('csv','notes.csv');
+
+    f = File.new(csv_fname,'w')
+
+    date_time = DateTime.now.strftime("%F %T")
+
+    # overall stats
+    overall_header_arr = self.overall_stats_header()
+    overall_header_arr.unshift("Report date")
+    overall_header_arr.unshift("Overall stats,,,,,,,,,,,,,,,,,,,,,,,")
+    overall_stats_arr = self.overall_registration_stats(facilitators, initial_scholarship)
+    overall_stats_arr.unshift("#{date_time}")
+    overall_stats_arr.unshift("")
+    overall_header_arr.each_index do |i|
+      f.puts("#{overall_header_arr[i]},#{overall_stats_arr[i]}")
+    end
+    f.puts("Contact information,,,,Payment information,,,,,,Registration information")
+
+    # individual stats
+    person_header_arr = self.person_header()
+    person_header_str = person_header_arr.join(',')
+    f.puts("#{person_header_str}")
+
+    # get a list of people
+    people = Person.all
+    people.each do |p|
+      occupancy = occupancy_hash[p.occupancy.to_s]
+      person_stats_arr = self.person_stats(p, occupancy)
+      person_stats_str = person_stats_arr.join(',')
+      f.puts("#{person_stats_str}")
+    end
+    f.close
+
+    # notes
+    f = File.new(notes_fname,'w')
+    people.each do |p|
+      notes = self.get_filtered_notes(p, 'all')
+      notes_arr = Array.new
+      notes_arr.push("#{p.first_name} #{p.last_name}")
+      notes.each do |n|
+        notes_arr.push(n.date_time)
+        notes_arr.push(n.note_type)
+	n.content = n.content.gsub(/\r/," ")
+	n.content = n.content.gsub(/\n/," ")
+        notes_arr.push(n.content)
+      end
+      notes_str = notes_arr.join(',')
+      f.puts("#{notes_str}")
+    end
+    f.close
+
+  end
+
+  def self.overall_stats_header()
+
+    # header for overall registration stats
+    header_arr = Array.new
+    header_arr.push("# Single")
+    header_arr.push("# Double")
+    header_arr.push("# Triple")
+    header_arr.push("# registered")
+    header_arr.push("# pending")
+    header_arr.push("# hold")
+    header_arr.push("Total due")
+    header_arr.push("Total paid")
+    header_arr.push("Balance due")
+    header_arr.push("Scholarship requested")
+    header_arr.push("Scholarships given")
+    header_arr.push("Scholarships available")
+
+    return header_arr
+
+  end
+
+  def self.overall_registration_stats(facilitators, initial_scholarship)
+
+    # get the overall registration stats 
+    sort_by = 'balance_due'
+
+    # get a list of people
+    people = Person.all
+    people = self.sort_by(sort_by)
+
+    # amount to deduct for facilitators
+    facilitator_deduction = 0
+    facilitators.each do |f|
+      facilitator_deduction += f.total_due
+    end
+
+    # get counts for waitlisted people so they're not included in totals
+    triple_waitlist = Person.count(:all, :conditions => ["registration_status = ? AND occupancy = ?", "wait_list", 3])
+    double_waitlist = Person.count(:all, :conditions => ["registration_status = ? AND occupancy = ?", "wait_list", 2])
+    single_waitlist = Person.count(:all, :conditions => ["registration_status = ? AND occupancy = ?", "wait_list", 1])
+    # room count totals
+    single = get_count('occupancy', '1') - single_waitlist
+    double = get_count('occupancy', '2') - double_waitlist
+    triple = get_count('occupancy', '3') - triple_waitlist
+
+    # registration stats 
+    # don't include wait listed people in total due
+    wait_list_total_due = Person.sum(:total_due, :conditions=>{:registration_status=>'wait_list'})
+    total_due = self.sum('total_due') - facilitator_deduction - wait_list_total_due
+
+    # scholarship info
+    donated_scholarships = self.sum('scholarship_donation')
+    initial_scholarship_amount = initial_scholarship
+    total_scholarship_applicants = self.get_count('scholarship_applicant', '1')
+    total_scholarship_given = self.sum('scholarship_amount')
+    total_available_scholarships = initial_scholarship_amount + donated_scholarships - total_scholarship_given
+
+    # balance due
+    # don't need to deduct waitlist since their balance due is set to 0
+    #total_balance_due = self.sum('balance_due') + total_scholarship_given
+    total_balance_due = self.sum('balance_due')
+
+
+    # deduct donated scholarships from total paid so it isn't include 2 times in report
+    total_paid = self.sum('paid_amount') - facilitator_deduction - self.sum('scholarship_donation')
+    #total_paid = self.sum('paid_amount') - facilitator_deduction - self.sum('scholarship_donation') + self.sum('scholarship_amount')
+
+    # number on wait list
+    total_registered = Person.all.length 
+    total_waitlist_count = 
+    registered_pending_count = self.get_count('registration_status', 'pending')
+    registered_paid_count = self.get_count('registration_status', 'registered') - facilitators.length
+    registered_hold_count = self.get_count('registration_status', 'hold')
+
+    # room counts
+    stats_arr = Array.new
+    stats_arr.push(single)
+    stats_arr.push(double)
+    stats_arr.push(triple)
+
+    # registration counts
+    stats_arr.push(total_registered)
+    stats_arr.push(registered_pending_count)
+    stats_arr.push(registered_hold_count)
+
+    # payment information
+    stats_arr.push(total_due)
+    stats_arr.push(total_paid)
+    stats_arr.push(total_balance_due)
+    stats_arr.push(total_scholarship_applicants)
+    stats_arr.push(total_scholarship_given)
+    stats_arr.push(total_available_scholarships)
+
+    return stats_arr
+
+  end
+
+  def self.person_header()
+
+ 
+    # header for registration stats
+    header_arr = Array.new
+    header_arr.push('first')
+    header_arr.push('last')
+    header_arr.push('email')
+    header_arr.push('phone')
+    header_arr.push('total due')
+    header_arr.push('paid')
+    header_arr.push('scholarship')
+    header_arr.push('scholarship donation')
+    header_arr.push('balance')
+    header_arr.push('payment status')
+    header_arr.push('registration status')
+    header_arr.push('paid date')
+
+    # roommate information
+    header_arr.push('occupancy')
+    header_arr.push('roomie 1')
+    header_arr.push('roomie 2')
+    header_arr.push('meal preference')
+    header_arr.push('scholarship applicant')
+    header_arr.push('can drive')
+    header_arr.push('needs ride')
+    #header_arr.push('registration date')
+    #header_arr.push('due date')
+    header_arr.push('wait list num')
+    header_arr.push('type')
+    #header_arr.push('check num')
+
+    return header_arr
+  
+  end
+
+  def self.person_stats(person, occupancy)
+
+    # person registration stats
+    person_stats_arr = Array.new
+    person_stats_arr.push(person.first_name)
+    person_stats_arr.push(person.last_name)
+    person_stats_arr.push(person.email)
+    person_stats_arr.push(person.phone)
+    person_stats_arr.push(person.total_due)
+    person_stats_arr.push(person.paid_amount)
+    person_stats_arr.push(person.scholarship_amount)
+    person_stats_arr.push(person.scholarship_donation)
+    person_stats_arr.push(person.balance_due)
+    person_stats_arr.push(person.payment_status)
+    person_stats_arr.push(person.registration_status)
+    person_stats_arr.push(person.paid_date)
+
+    # roommate information
+    person_stats_arr.push(occupancy)
+    roommate1 = self.get_roommate(person.roommate_id1)
+    roommate2 = self.get_roommate(person.roommate_id2)
+    if ( person.occupancy==1 )
+      roommate1 = 'N/A'
+      roommate2 = 'N/A'
+    end
+    if ( person.occupancy==2 )
+      roommate1 = 'TBD' if person.roommate_id1==0;
+      roommate2 = 'N/A'
+    end
+    if ( person.occupancy==3 )
+      roommate1 = 'TBD' if person.roommate_id1==0;
+      roommate2 = 'TBD' if person.roommate_id2==0;
+    end
+    person_stats_arr.push(roommate1)
+    person_stats_arr.push(roommate2)
+
+    person_stats_arr.push(person.meal_preference)
+    scholarship_applicant = (person.scholarship_applicant==0) ? "no" : "yes"
+    person_stats_arr.push(scholarship_applicant)
+    #person_stats_arr.push(person.scholarship_applicant)
+    person_stats_arr.push(person.can_drive_num)
+    needs_ride = (person.needs_ride==0) ? "no" : "yes"
+    person_stats_arr.push(needs_ride)
+    #person_stats_arr.push(person.needs_ride)
+    #person_stats_arr.push(person.registration_date)
+    #person_stats_arr.push(person.due_date)
+    person_stats_arr.push(person.wait_list_num)
+    person_stats_arr.push(person.payment_type)
+    #person_stats_arr.push(person.check_num)
+
+    person_stats_arr
+  
+  end
+
+  def self.xxxx(facilitators, initial_scholarship, csv_fname)
+
+    # header
+    date_time = DateTime.now.strftime("%F %T")
+    header_arr = Array.new
+    header_arr.push('Report date')
+    # status
+    stats_arr = Array.new
+    stats_arr.push(date_time)
+
+    sort_by = 'balance_due'
+
+    # get a list of people
+    people = Person.all
+    people = self.sort_by(sort_by)
+
+    # amount to deduct for facilitators
+    facilitator_deduction = 0
+    facilitators.each do |f|
+      facilitator_deduction += f.total_due
+    end
+
+    # get counts for waitlisted people
+    # so they're not included in totals
+    triple_waitlist = Person.count(:all, :conditions => ["registration_status = ? AND occupancy = ?", "wait_list", 3])
+    double_waitlist = Person.count(:all, :conditions => ["registration_status = ? AND occupancy = ?", "wait_list", 2])
+    single_waitlist = Person.count(:all, :conditions => ["registration_status = ? AND occupancy = ?", "wait_list", 1])
+    # room count totals
+    single = get_count('occupancy', '1') - single_waitlist
+    double = get_count('occupancy', '2') - double_waitlist
+    triple = get_count('occupancy', '3') - triple_waitlist
+
+
+    # registration stats 
+    # don't include wait listed people in total due
+    wait_list_total_due = Person.sum(:total_due, :conditions=>{:registration_status=>'wait_list'})
+    total_due = self.sum('total_due') - facilitator_deduction - wait_list_total_due
+
+    # scholarship info
+    donated_scholarships = self.sum('scholarship_donation')
+    initial_scholarship_amount = initial_scholarship
+    total_scholarship_applicants = self.get_count('scholarship_applicant', '1')
+    total_scholarship_given = self.sum('scholarship_amount')
+    total_available_scholarships = initial_scholarship_amount + donated_scholarships - total_scholarship_given
+
+    # balance due
+    # don't need to deduct waitlist since their balance due is set to 0
+    #total_balance_due = self.sum('balance_due') + total_scholarship_given
+    total_balance_due = self.sum('balance_due')
+
+
+    # deduct donated scholarships from total paid so it isn't include 2 times in report
+    total_paid = self.sum('paid_amount') - facilitator_deduction - self.sum('scholarship_donation')
+    #total_paid = self.sum('paid_amount') - facilitator_deduction - self.sum('scholarship_donation') + self.sum('scholarship_amount')
+
+    # number on wait list
+    total_registered = Person.all.length 
+    total_waitlist_count = 
+    registered_pending_count = self.get_count('registration_status', 'pending')
+    registered_paid_count = self.get_count('registration_status', 'registered') - facilitators.length
+    registered_hold_count = self.get_count('registration_status', 'hold')
+
+    # room counts
+    header_arr.push('# Single')
+    stats_arr.push(single)
+    header_arr.push('# Double')
+    stats_arr.push(double)
+    header_arr.push('# Triple')
+    stats_arr.push(triple)
+
+    # registration counts
+    header_arr.push('# registered')
+    stats_arr.push(total_registered)
+    header_arr.push('# pending')
+    stats_arr.push(registered_pending_count)
+    header_arr.push('# hold')
+    stats_arr.push(registered_hold_count)
+
+    # payment information
+    header_arr.push('Total due')
+    stats_arr.push(total_due)
+
+    header_arr.push('Total paid')
+    stats_arr.push(total_paid)
+
+    header_arr.push('Balance due')
+    stats_arr.push(total_balance_due)
+
+    header_arr.push('Scholarship requested')
+    stats_arr.push(total_scholarship_applicants)
+
+    header_arr.push('Scholarships given')
+    stats_arr.push(total_scholarship_given)
+
+    header_arr.push('Scholarships available')
+    stats_arr.push(total_available_scholarships)
+
+
+    final_arr = Array.new
+    header_arr.each_index do |i|
+      f.puts("#{header_arr[i]};#{stats_arr[i]}")
+      #f.puts("#{stats_arr[i]}")
+      #header_str = header_arr.join(';')
+      #stats_str = stats_arr.join(';')
+      #f.puts("#{header_str}")
+      #f.puts("#{stats_str}")
+      #f.puts("#{header_arr[i]}
+      #f.puts("#{stats_arr[i]};;;;;;;;;;;;;;;;;;;;;;;")
+    end
+    f.close
+    #return
+    #final_arr.unshift('REGISTRATION STATS:');
+    #final_str = final_arr.join(';')
+
+
+      # header
+      date_time = DateTime.now.strftime("%F %T")
+      header_arr = Array.new
+      header_arr.push('Report date')
+      # person info 
+      person_arr = Array.new
+      person_arr.push("#{date_time}")
+
+
+      p = Person.find(48)
+      person_arr.push(p.last_name)
+      person_arr.push(p.first_name)
+      person_arr.push(p.email)
+      person_arr.push(p.phone)
+      person_arr.push(p.payment_type)
+      person_arr.push(p.payment_status)
+      person_arr.push(p.registration_status)
+      person_arr.push(p.paid_amount)
+      person_arr.push(p.scholarship_amount)
+      person_arr.push(p.scholarship_donation)
+      person_arr.push(p.balance_due)
+      person_arr.push(p.occupancy)
+      person_arr.push(p.check_num)
+      person_arr.push(p.can_drive_num)
+      person_arr.push(p.wait_list_num)
+      person_arr.push(p.roommate_id1)
+      person_arr.push(p.roommate_id2)
+      person_arr.push(p.needs_ride)
+      person_arr.push(p.paid_date)
+      person_arr.push(p.registration_date)
+      person_arr.push(p.due_date)
+      person_arr.push(p.total_due)
+      person_arr.push(p.meal_preference)
+      person_arr.push(p.scholarship_applicant)
+      return "#{person_arr.length} and #{header_arr.length} and #{stats_arr.length}"
+
+      #header_arr.push(';;;;;;;;;;;;;;;;;;;;;;;;');
+      header_arr.push('last name')
+      header_arr.push('first name')
+      header_arr.push('email')
+      header_arr.push('phone')
+      header_arr.push('payment type')
+      header_arr.push('payment status')
+      header_arr.push('registration status')
+      header_arr.push('paid amount')
+      header_arr.push('scholarship amount')
+      header_arr.push('scholarship donation')
+      header_arr.push('balance due')
+      header_arr.push('occupancy')
+      header_arr.push('check num')
+      header_arr.push('can drive num')
+      header_arr.push('wait list num')
+      header_arr.push('roommate id1')
+      header_arr.push('roommate id2')
+      header_arr.push('needs ride')
+      header_arr.push('paid date')
+      header_arr.push('registration date')
+      header_arr.push('due date')
+      header_arr.push('total due')
+      header_arr.push('meal preference')
+      header_arr.push('scholarship applicant')
+
+      header_str = header_arr.join(',')
+      person_str = person_arr.join(',')
+      f.puts(header_str)
+      f.puts(person_str)
+      f.close
+      return ""
+
+
+
+##      p = Person.find(48)
+##      arr = Array.new
+##      header_arr = Array.new
+##      header_arr.push(';;;;;;;;;;;;;;;;;;;;')
+##      header_arr.push('First')
+##      header_arr.push('Last')
+##      header_arr.push('Email')
+##      header_arr.push('phone')
+##      header_arr.push('payment status')
+##      header_arr.push('registration status')
+##      header_arr.push('paid amount')
+##      header_arr.push('scholarship amount')
+##      header_arr.push('scholarship donation')
+##      header_arr.push('balance due')
+##      header_arr.push('occupancy')
+##      header_arr.push('check num')
+##      header_arr.push('wait list num')
+##      header_arr.push('needs ride')
+##      header_arr.push('paid date')
+##      header_arr.push('registration date')
+##      header_arr.push('due date')
+##      header_arr.push('total due')
+##      header_arr.push('meal preference')
+##      header_arr.push('scholarship applicant')
+
+##      person_arr.push(p.first_name)
+##      person_arr.push(p.last_name)
+##      person_arr.push(p.email)
+##      person_arr.push(p.phone)
+##      person_arr.push(p.payment_status)
+##      person_arr.push(p.registration_status)
+##      person_arr.push(p.paid_amount)
+##      person_arr.push(p.scholarship_amount)
+##      person_arr.push(p.scholarship_donation)
+##      person_arr.push(p.balance_due)
+##      person_arr.push(p.occupancy)
+##      person_arr.push(p.check_num)
+##      person_arr.push(p.wait_list_num)
+##      person_arr.push(p.needs_ride)
+##      person_arr.push(p.paid_date)
+##      person_arr.push(p.registration_date)
+##      person_arr.push(p.due_date)
+##      person_arr.push(p.total_due)
+##      person_arr.push(p.meal_preference)
+##      person_arr.push(p.scholarship_applicant)
+      #next if ((split_report.eql?('true')) and (p.scholarship_applicant) )
+
+    people.reverse.each do |p|
+      arr.push(p.first_name)
+      arr.push(p.last_name)
+      arr.push(p.email)
+      arr.push(p.phone)
+      arr.push(p.payment_status)
+      arr.push(p.paid_amount)
+      arr.push(p.scholarship_amount)
+      arr.push(p.scholarship_donation)
+      arr.push(p.balance_due)
+      arr.push(p.occupancy)
+      arr.push(p.check_num)
+      arr.push(p.wait_list_num)
+      arr.push(p.needs_ride)
+      arr.push(p.paid_date)
+      arr.push(p.registration_date)
+      arr.push(p.due_date)
+      arr.push(p.total_due)
+      arr.push(p.meal_preference)
+      arr.push(p.scholarship_applicant)
+      return arr
+      #next if ((split_report.eql?('true')) and (p.scholarship_applicant) )
+      #next if (p.last_name.eql?(facilitators[0].last_name))
+      #next if (p.last_name.eql?(facilitators[1].last_name))
+      #arr.push("--------------------")
+      jtats_arr = Array.new
+      arr.push("Name: #{p.first_name} #{p.last_name}\n")
+      stats_arr.push("Status: #{p.registration_status}")
+      stats_arr.push("Paid: #{p.paid_amount}")
+      if ( p.balance_due < 0 )
+        stats_arr.push("Donation: #{p.balance_due.abs}")
+      else
+        stats_arr.push("Balance due: #{p.balance_due}")
+      end
+      if ( p.scholarship_amount > 0 )
+        stats_arr.push("Scholarship: #{p.scholarship_amount}")
+      end
+      stats_arr.push("Meal preference: #{p.meal_preference}")
+      if ( !p.wait_list_num.nil? )
+        stats_arr.push("Wait list #: #{p.wait_list_num}")
+      end
+      stats_str = stats_arr.join('; ')
+      arr.push(stats_str);
+    end
+
+    arr
+
+  end
+
+
   def self.report(facilitators, initial_scholarship, split_report)
 
-    #sort_by = 'last_name'
-    #sort_by = 'registration_status'
     sort_by = 'balance_due'
+
     # get a list of people
     people = self.sort_by(sort_by)
 
@@ -682,17 +1087,6 @@ class Person < ActiveRecord::Base
     single = get_count('occupancy', '1') - single_waitlist
     double = get_count('occupancy', '2') - double_waitlist
     triple = get_count('occupancy', '3') - triple_waitlist
-    #single = get_count('occupancy', '1')
-    #double = get_count('occupancy', '2')
-    #triple = get_count('occupancy', '3')
-#   waitlist_deduction = 0
-#    people.each do |p|
-#      if ( !p.wait_list_num.nil?)
-#        # first deduct balance due
-#        return p.balance_due
-#      end
-#    end
-#    return "test2"
 
     # registration stats 
     # don't include wait listed people in total due
@@ -719,15 +1113,10 @@ class Person < ActiveRecord::Base
     #total_paid = self.sum('paid_amount') - facilitator_deduction - self.sum('scholarship_donation') + self.sum('scholarship_amount')
 
     # number on wait list
-    wait_list_count = self.get_count('registration_status', 'wait_list');
-    total_registered = Person.all.length - wait_list_count
+    total_registered = Person.all.length - 
     registered_pending_count = self.get_count('registration_status', 'pending')
-    #registered_paid_count = self.get_count('registration_status', 'registered')
     registered_paid_count = self.get_count('registration_status', 'registered') - facilitators.length
     registered_hold_count = self.get_count('registration_status', 'hold')
-    #single = get_count('occupancy', '1')
-    #double = get_count('occupancy', '2')
-    #triple = get_count('occupancy', '3')
 
     arr = Array.new
     arr.push("Total due: #{to_currency(total_due)}")
@@ -754,8 +1143,11 @@ class Person < ActiveRecord::Base
 
     people.reverse.each do |p|
       next if ((split_report.eql?('true')) and (p.scholarship_applicant) )
-      next if (p.last_name.eql?(facilitators[0].last_name))
-      next if (p.last_name.eql?(facilitators[1].last_name))
+      facilitators.each do |f|
+        next if (p.last_name.eql?(f.last_name));
+      end
+      #next if (p.last_name.eql?(facilitators[0].last_name))
+      #next if (p.last_name.eql?(facilitators[1].last_name))
       arr.push("--------------------")
       stats_arr = Array.new
       arr.push("Name: #{p.first_name} #{p.last_name}\n")

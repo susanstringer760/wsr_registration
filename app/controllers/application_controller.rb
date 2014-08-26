@@ -1,72 +1,48 @@
 class ApplicationController < ActionController::Base
+
   protect_from_forgery
 
-  #before_filter :set_prices
-  #before_filter :set_occupancy
-  #before_filter :report_email
   before_filter :set_constants
 
   protected
 
   def set_constants
 
-    # room rates
-    @prices = Hash.new
-    @prices[1] = 364.00
-    @prices[2] = 235.00 
-    @prices[3] = 195.00 
+    # room prices
+    @prices = WsrRegistration::Application.config.prices
+    
+    # occupancy
+    @occupancy_by_id = WsrRegistration::Application.config.occupancy_by_id
+    @occupancy_by_value = WsrRegistration::Application.config.occupancy_by_value
+    
+    # report email list
+    @email_list = WsrRegistration::Application.config.email_list
 
-    # occupancy mapping
-    @occupancy_by_id = {'1'=>'Single','2'=>'Double', '3'=>'Triple' }
-    @occupancy_by_value = {'Single'=>'1','Double'=>'2', 'Triple'=>'3' }
+    # admin email
+    @admin_email = WsrRegistration::Application.config.admin_email
+    @admin_password = WsrRegistration::Application.config.admin_password
 
-    # report recipients
-    @email_list = "sanityhasreturned@gmail.com,sensabama@aol.com,susanstringer760@comcast.net,josiew1158@gmail.com"
-    #@email_list = "susanstringer760@comcast.net, sensabama@aol.com"
-    #@email_list = "susanstringer760@gmail.com,snorman@ucar.edu"
-
-    # base scholarship amount
-    @initial_scholarship = 300.00
-
-    # amount for facilitators
+    # initial scholarship amount
+    @initial_scholarship = WsrRegistration::Application.config.initial_scholarship
+    
+    # facilitators
     @facilitators = Array.new
-    @facilitators.push(Person.find_by_last_name('Vielbig'))
-    @facilitators.push(Person.find_by_last_name('Bruni'))
-
+    @facilitators_last_name = WsrRegistration::Application.config.facilitators_last_name
+    @facilitators_last_name.each do |name|
+      @facilitators.push(Person.find_by_last_name(name))
+    end
+    
     # array of people to exclude when sending out confirmation email
     @exclude_id = Array.new
     @facilitators.each do |f|
       @exclude_id.push(f.id)
     end
-    person = Person.find(:all, :conditions=>{:last_name=>'Weaver'})
-    @exclude_id.push(person[0].id)
-    person = Person.find(:all, :conditions=>{:last_name=>'Flynn'})
-    @exclude_id.push(person[0].id)
-    person = Person.find(:all, :conditions=>{:last_name=>'Richardson'})
-    @exclude_id.push(person[0].id)
-    person = Person.find(:all, :conditions=>{:last_name=>'bbb'})
-    @exclude_id.push(person[0].id)
+    #@exclude_id = WsrRegistration::Application.config.exclude_id
 
-    @wsr_logistics_pdf = "/Users/snorman/rails_tmp/wsr_registration/reports/WSR_logistics.pdf"
+    @final_confirmation_pdf = WsrRegistration::Application.config.final_confirmation_pdf
 
+    @csv_fname = WsrRegistration::Application.config.csv_fname
 
   end
-
-#  def set_prices() 
-#    @prices = Hash.new
-#    @prices[1] = 364 
-#    @prices[2] = 235 
-#    @prices[3] = 195 
-#  end 
-#
-#  def set_occupancy
-#    @occupancy_by_id = {'1'=>'Single','2'=>'Double', '3'=>'Triple' }
-#    @occupancy_by_value = {'Single'=>'1','Double'=>'2', 'Triple'=>'3' }
-#  end
-#
-#  def report_email
-#    @email_list = "sanityhasreturned@gmail.com,sensabama@aol.com,susanstringer760@comcast.net"
-#    #@email_list = "susanstringer760@comcast.net, snorman@ucar.edu"
-#  end
 
 end

@@ -4,9 +4,9 @@ class PeopleController < ApplicationController
   # GET /people.json
   def index
 
-  params[:sort_by] ?
-    sort_by = params[:sort_by] :
-    sort_by = 'last_name'
+    params[:sort_by] ?
+      sort_by = params[:sort_by] :
+      sort_by = 'first_name'
 
     # list of people
     # @people = Person.sort_by(sort_by) 
@@ -25,7 +25,7 @@ class PeopleController < ApplicationController
     @roommate_hash = Person.roommate_hash()
 
     # report to display on index 
-    arr = Person.report(@facilitators, @initial_scholarship,false)
+    arr = Person.report(@facilitators, @initial_scholarship, false)
     balance_arr = Array.new
     scholarship_arr = Array.new
     registered_arr = Array.new
@@ -42,11 +42,10 @@ class PeopleController < ApplicationController
 
     @totals_hash = Hash.new
     @totals_hash['balance'] = balance_arr
-#render :text=>"asdf: #{balance_arr}"
-#return
     @totals_hash['scholarship'] = scholarship_arr
     @totals_hash['registered'] = registered_arr
     @totals_hash['occupancy'] = occupancy_arr
+
 
     respond_to do |format|
       format.html # index.html.erb
@@ -60,8 +59,6 @@ class PeopleController < ApplicationController
   def show
 
     @person = Person.find(params[:id])
-   #render :text=>"in show: #{@person.first_name}: #{@person.registration_status}"
-   #return
     #@roommates  = Person.roommate_list()
     @roommates  = Person.roommate_list(@person.id)
 
@@ -83,7 +80,9 @@ class PeopleController < ApplicationController
         @notes_hash['confirmation'] = {} :
         @notes_hash['confirmation'] = notes['confirmation']
         @params = Person.show_confirmation(@person, @occupancy_by_id, @prices)
-      #PersonMailer.registration_confirmation(@person,@params,@notes_hash).deliver
+
+        #PersonMailer.registration_confirmation(@person,@params,@notes_hash).deliver
+        #PersonMailer.registration_confirmation(@person,@params,@notes_hash, @admin_email,@admin_password).deliver
     else
       @notes_hash = notes
       @params = Person.show_person(@person, @occupancy_by_id, @prices)
@@ -153,6 +152,8 @@ class PeopleController < ApplicationController
 
     person_params = params[:person]
     params[:person] = Person.set_values(person_params, @prices)
+    #render :text=>"asdf: #{params[:person]}"
+    #return
 
     @person = Person.new(params[:person])
 
@@ -173,12 +174,12 @@ class PeopleController < ApplicationController
   def update
 
     @person = Person.find(params[:id])
-   #render :text=>"in update: #{@person.first_name}: #{@person.registration_status}"
-   #return
     @roommates  = Person.roommate_list(@person.id)
 
     person_params = params[:person]
     params[:person] = Person.set_values(person_params, @prices)
+    #render :text=>"asdf: #{params[:person]}"
+    #return
     
     respond_to do |format|
       if @person.update_attributes(params[:person])
@@ -224,9 +225,10 @@ class PeopleController < ApplicationController
     @params = Person.show_confirmation(@person, @occupancy_by_id, @prices)
 
     if (confirmation_type.eql?('final'))
-      PersonMailer.final_confirmation(@person,@params,@notes_hash,@wsr_logistics_pdf).deliver
+      #PersonMailer.final_confirmation(@person,@params,@notes_hash,@final_confirmation_pdf).deliver
     end
     if (confirmation_type.eql?('confirm'))
+      #PersonMailer.registration_confirmation(@person,@params,@notes_hash, @admin_email).deliver
       PersonMailer.registration_confirmation(@person,@params,@notes_hash).deliver
     end
 
@@ -319,33 +321,15 @@ class PeopleController < ApplicationController
    report_type = params[:report_type]
    split_report = params[:split_report]
 
-   if ( report_type.eql?('email_list')) 
-    date_time = Time.now.strftime("%Y%m%d_%H%M") 
-    fname = "WSR_email_list.#{date_time}.txt"
-    full_path = Rails.root.join('reports', fname)
-    #Person.create_email_list(full_path, @exclude_id)
-    xx = Person.create_email_list(full_path, @exclude_id)
-    render :text=>"asdf: #{xx}"
-    return
-   end
-
-   if ( report_type.eql?('carpool'))
-    date_time = Time.now.strftime("%Y%m%d_%H%M") 
-    fname = "carpool_report.#{date_time}.csv"
-    fname = "WSR_carpool.csv"
-    full_path = Rails.root.join('reports', fname)
-    Person.create_carpool_report(full_path, 'last_name')
-   end
-
-   if ( report_type.eql?('registration') )
-    date_time = Time.now.strftime("%Y%m%d_%H%M") 
-    fname = "final_registration.#{date_time}.csv"
-    fname = "WSR_final_registration.csv"
-    full_path = Rails.root.join('reports', fname)
-    Person.create_final_registration_report(full_path, @occupancy_by_id)
+   if (report_type.eql?('csv'))
+     # generate csv with all information 
+     @arr = Person.generate_csv(@facilitators, @occupancy_by_id,@initial_scholarship,@csv_fname)
+     render :text=>"Report generated: #{@csv_fname}"
+     return
    end
 
    if (report_type.eql?('roommate'))
+     @date_time = DateTime.now.strftime("%F %T")
     date_time = Time.now.strftime("%Y%m%d_%H%M") 
     #fname = "roommates.csv"
     fname = "roommate_report.#{date_time}.csv"
@@ -361,6 +345,7 @@ class PeopleController < ApplicationController
      PersonMailer.registration_report(@email_list,@arr).deliver
    end
 
+
    if (report_type.eql?('send_all'))
 
 #    # get a hash of notes where key is note type
@@ -374,28 +359,17 @@ class PeopleController < ApplicationController
 #    @notes_hash['confirmation'] = @notes['confirmation']
 #    @params = Person.show_confirmation(@person, @occupancy_by_id, @prices)
 #    #PersonMailer.registration_confirmation(@person,@params,@notes_hash).deliver
-#     PersonMailer.final_confirmation(@person,@params,@notes_hash, @final_confirmation_pdf).deliver
+#    PersonMailer.final_confirmation(@person,@params,@notes_hash, @final_confirmation_pdf).deliver
 #    # add email log note
 #    email_log_note = Person.generate_email_log(@person.id)
 #    @person.notes.push(email_log_note)
-      #fname = "/Users/snorman/rails_tmp/wsr_registration/notes/test.out"
-      #f = File.new(fname, 'w')
+
       # an array of facilitators id #
       people = Person.find(:all)
       count = 0
-
-      #people = Array.new
-      #xx = Person.find(56)
-      #people.push(xx)
-      #xx = Person.find(48)
-      #people.push(xx)
-
       people.each do |p|
         next if @exclude_id.grep(p.id).length > 0
 	next if p.registration_status.eql?('wait_list')
-	#f.puts("#{p.first_name} #{p.last_name}: #{p.registration_status}")
-	#next
-
         @person = p
         # get a hash of notes where key is note type
         # and value is array note objects
@@ -404,19 +378,14 @@ class PeopleController < ApplicationController
         @notes = Person.get_notes(@person)
         @notes_hash['confirmation'] = @notes['confirmation']
         @params = Person.show_confirmation(@person, @occupancy_by_id, @prices)
-        #PersonMailer.registration_confirmation(@person,@params,@notes_hash).deliver
-        PersonMailer.final_confirmation(@person,@params,@notes_hash,@wsr_logistics_pdf).deliver
+        PersonMailer.registration_confirmation(@person,@params,@notes_hash).deliver
         # add email log note
         email_log_note = Person.generate_email_log(@person.id)
         @person.notes.push(email_log_note)
-        ##PersonMailer.registration_confirmation(p,@params,{}).deliver
+        #PersonMailer.registration_confirmation(p,@params,{}).deliver
 	sleep(30)
-	#count = count+1
-	#break if (count > 3)
       end
-      #f.close
    end
-
 
   end
 

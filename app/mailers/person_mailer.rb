@@ -1,7 +1,8 @@
 class PersonMailer < ActionMailer::Base
 
   #default from: "from@example.com"
-  default :from => "susanstringer760@comcast.net"
+  #default :from => "susanstringer760@gmail.com"
+  default :from => "wsr.serenity@gmail.com"
 
   #def registration_confirmation(person, params, roommate1, roommate2)
   def final_confirmation(person, params,notes_hash, attachment_fname)
