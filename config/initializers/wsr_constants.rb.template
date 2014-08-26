@@ -1,0 +1,36 @@
+# constants
+
+# room prices
+# 2014
+WsrRegistration::Application.config.prices = [349.00,249.00,199.00]
+# 2013
+#WsrRegistration::Application.config.prices = [364.00,235.00,195.00]
+
+# occupancy
+WsrRegistration::Application.config.occupancy_by_id = {'1'=>'Single','2'=>'Double', '3'=>'Triple' }
+WsrRegistration::Application.config.occupancy_by_value = {'Single'=>'1','Double'=>'2', 'Triple'=>'3' }
+
+# report email list
+WsrRegistration::Application.config.email_list = "susanstringer760@gmail.com,snorman@ucar.edu"
+
+# wsr email
+WsrRegistration::Application.config.admin_email = "[admin email address]"
+WsrRegistration::Application.config.admin_password = "[admin email password"
+
+# initial scholarship amount
+WsrRegistration::Application.config.initial_scholarship = 300.00 
+
+# facilitators 2013
+facilitators_last_name = Array.new
+facilitators_last_name.push('f1');
+facilitators_last_name.push('f2');
+# facilitators 2014
+facilitators_last_name = [];
+
+WsrRegistration::Application.config.facilitators_last_name = facilitators_last_name
+
+# final confirmation pdf
+WsrRegistration::Application.config.final_confirmation_pdf = "/Users/snorman/rails_tmp/wsr_registration/reports/WSR_final_confirmation.pdf"
+
+# output csv fname
+WsrRegistration::Application.config.csv_fname = "[output report csv fname]"
