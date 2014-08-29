@@ -77,8 +77,8 @@ class Person < ActiveRecord::Base
      # calculate all the price dependent values
 
      # update parameters 
-     #occupancy = params[:occupancy].to_i - 1
-     occupancy = params[:occupancy].to_i
+     occupancy = params[:occupancy].to_s
+     #occupancy = params[:occupancy].to_i
      #balance_due = params[:balance_due]
      balance_due = 0.0
      payment_status = params[:payment_status]
@@ -96,7 +96,8 @@ class Person < ActiveRecord::Base
        payment_status = 'paid'
        scholarship_donation = paid_amount
      else 
-       total_due = pricing[occupancy-1]
+       #total_due = pricing[occupancy-1]
+       total_due = pricing[occupancy].to_f
        balance_due =  total_due - paid_amount - scholarship_amount 
        if ( balance_due <= 0)
          registration_status = 'registered'
@@ -115,7 +116,7 @@ class Person < ActiveRecord::Base
        end
      end
 
-     params[:occupancy] =  occupancy
+     params[:occupancy] =  occupancy.to_i
      params[:balance_due] = balance_due
      params[:payment_status] = payment_status
      params[:registration_status] = registration_status
@@ -263,7 +264,7 @@ class Person < ActiveRecord::Base
      name = "#{person.first_name} #{person.last_name}"
      email = person.email
      phone = person.phone
-     total_due = prices[person.occupancy]
+     total_due = prices[person.occupancy.to_s]
      registration_status = person.registration_status
      payment_status = person.payment_status
      payment_type = person.payment_type
@@ -313,7 +314,8 @@ class Person < ActiveRecord::Base
      params.push(["Roommate 1",  roommate1.to_s]) if (person.occupancy > 1);
      params.push(["Roommate 2",  roommate2.to_s]) if (person.occupancy > 2);
      params.push(["Meal preference",  meal_preference.to_s]);
-     params.push(["Can drive number",  can_drive_num.to_s]) if (!can_drive_num.blank?)
+     #params.push(["Can drive number",  can_drive_num.to_s]) if (!can_drive_num.blank?)
+     params.push(["Can drive number",  can_drive_num.to_s]) if (can_drive_num > 0)
      params.push(["Needs ride",  needs_ride.to_s]) if (!needs_ride.blank?)
 
      params
@@ -697,32 +699,32 @@ class Person < ActiveRecord::Base
  
     # header for registration stats
     header_arr = Array.new
-    header_arr.push('first')
-    header_arr.push('last')
-    header_arr.push('email')
-    header_arr.push('phone')
-    header_arr.push('total due')
-    header_arr.push('paid')
-    header_arr.push('scholarship')
-    header_arr.push('scholarship donation')
-    header_arr.push('balance')
-    header_arr.push('payment status')
-    header_arr.push('registration status')
-    header_arr.push('paid date')
+    header_arr.push('First')
+    header_arr.push('Last')
+    header_arr.push('Email')
+    header_arr.push('Phone')
+    header_arr.push('Total due')
+    header_arr.push('Paid')
+    header_arr.push('Scholarship')
+    header_arr.push('Scholarship donation')
+    header_arr.push('Balance')
+    header_arr.push('Payment status')
+    header_arr.push('Registration status')
+    header_arr.push('Paid date')
 
     # roommate information
-    header_arr.push('occupancy')
-    header_arr.push('roomie 1')
-    header_arr.push('roomie 2')
-    header_arr.push('meal preference')
-    header_arr.push('scholarship applicant')
-    header_arr.push('can drive')
-    header_arr.push('needs ride')
-    #header_arr.push('registration date')
-    #header_arr.push('due date')
-    header_arr.push('wait list num')
-    header_arr.push('type')
-    #header_arr.push('check num')
+    header_arr.push('Occupancy')
+    header_arr.push('Roomie 1')
+    header_arr.push('Roomie 2')
+    header_arr.push('Meal preference')
+    header_arr.push('Scholarship applicant')
+    header_arr.push('Can drive')
+    header_arr.push('Needs ride')
+    #header_arr.push('Registration date')
+    #header_arr.push('Due date')
+    header_arr.push('Wait list num')
+    header_arr.push('Type')
+    #header_arr.push('Check num')
 
     return header_arr
   
@@ -765,12 +767,13 @@ class Person < ActiveRecord::Base
     person_stats_arr.push(roommate2)
 
     person_stats_arr.push(person.meal_preference)
-    scholarship_applicant = (person.scholarship_applicant==0) ? "no" : "yes"
-    person_stats_arr.push(scholarship_applicant)
+    #scholarship_applicant = (person.scholarship_applicant.to_s.eql?('true')) ?
+    #scholarship_applicant = (person.scholarship_applicant==0) ? "no" : "yes"
+    person_stats_arr.push(person.scholarship_applicant.to_s)
     #person_stats_arr.push(person.scholarship_applicant)
     person_stats_arr.push(person.can_drive_num)
-    needs_ride = (person.needs_ride==0) ? "no" : "yes"
-    person_stats_arr.push(needs_ride)
+    #needs_ride = (person.needs_ride==0) ? "no" : "yes"
+    person_stats_arr.push(person.needs_ride.to_s)
     #person_stats_arr.push(person.needs_ride)
     #person_stats_arr.push(person.registration_date)
     #person_stats_arr.push(person.due_date)
@@ -1080,9 +1083,9 @@ class Person < ActiveRecord::Base
 
     # get counts for waitlisted people
     # so they're not included in totals
-    triple_waitlist = Person.count(:all, :conditions => ["registration_status = ? AND occupancy = ?", "wait_list", 3])
-    double_waitlist = Person.count(:all, :conditions => ["registration_status = ? AND occupancy = ?", "wait_list", 2])
-    single_waitlist = Person.count(:all, :conditions => ["registration_status = ? AND occupancy = ?", "wait_list", 1])
+    triple_waitlist = Person.count(:all, :conditions => ["registration_status = ? AND occupancy = ?", "wait_list", 2])
+    double_waitlist = Person.count(:all, :conditions => ["registration_status = ? AND occupancy = ?", "wait_list", 1])
+    single_waitlist = Person.count(:all, :conditions => ["registration_status = ? AND occupancy = ?", "wait_list", 0])
     # room count totals
     single = get_count('occupancy', '1') - single_waitlist
     double = get_count('occupancy', '2') - double_waitlist

@@ -178,7 +178,7 @@ class PeopleController < ApplicationController
 
     person_params = params[:person]
     params[:person] = Person.set_values(person_params, @prices)
-    #render :text=>"asdf: #{params[:person]}"
+    #render :text=>"#{params[:person]}"
     #return
     
     respond_to do |format|

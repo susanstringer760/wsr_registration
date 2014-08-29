@@ -101,7 +101,7 @@
     <% end %>
     </td>
     <td><%= @occupancy_by_id[person.occupancy.to_s] %>
-    <td><%= number_to_currency(@prices[person.occupancy]) %></td>
+    <td><%= number_to_currency(@prices[person.occupancy.to_s]) %></td>
     <td><%= number_to_currency(person.paid_amount) %></td>
     <% if person.balance_due.to_f > 0 %>
       <% if person.paid_amount.to_f == 0 %>

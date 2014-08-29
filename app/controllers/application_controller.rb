@@ -10,6 +10,7 @@ class ApplicationController < ActionController::Base
 
     # room prices
     @prices = WsrRegistration::Application.config.prices
+    #@prices.unshift(0)
     
     # occupancy
     @occupancy_by_id = WsrRegistration::Application.config.occupancy_by_id

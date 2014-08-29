@@ -29,12 +29,12 @@ class PersonMailer < ActionMailer::Base
      @notes_hash = notes_hash
      #@roommate1 = roommate1
      #@roommate2 = roommate2
-     cc_to = "susanstringer760@comcast.net"
+     cc_to = "wsr.serenity@gmail.com"
 
 
      #mail(:to=> @person.email, :subject => "WSR Confirmation")
-     #mail(:to=> @person.email, :cc=>cc_to, :subject => "WSR Confirmation")
-     mail(:to=> @person.email, :cc=>"susanstringer760@comcast.net", :subject => "WSR Confirmation for #{@person.first_name} #{@person.last_name}")
+     mail(:to=> @person.email, :cc=>cc_to, :subject => "WSR Confirmation")
+     #mail(:to=> @person.email, :cc=>"susanstringer760@comcast.net", :subject => "WSR Confirmation for #{@person.first_name} #{@person.last_name}")
 
   end
 
