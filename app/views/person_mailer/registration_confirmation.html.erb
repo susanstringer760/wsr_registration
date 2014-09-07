@@ -13,8 +13,12 @@ This is a confirmation of your registration status. Please review the informatio
 <% end %>
 <p></p>
 
-<% if (@person.balance_due > -1.0) %>
-Your current balance of <%= number_to_currency(@person.balance_due) %> is due by September 23rd. Please contact me if you have any questions regarding payment.
+<% if (@person.paid_amount == 0 ) %>
+Please note that you must pay a deposit by September 15 in order to hold your spot.
+<% end %>
+
+<% if (@person.balance_due > 0.0) %>
+Your current balance of <%= number_to_currency(@person.balance_due) %> is due by September 23th. Please contact me if you have any questions regarding payment.
 <% end %>
 <p></p>
 
@@ -26,7 +30,6 @@ You are currently registered for a triple occupancy room, which is equipped with
 The YMCA can accommodate vegetarian or gluten free meal options (not vegan, but there is a salad bar).  Please note that these options are offered with the buffet but do not come from a separate kitchen. 
 <p></p>
 
-<% @person.scholarship_applicant = 'true' %>
 <% if (@person.scholarship_applicant ) %>
 You have applied for a scholarship.  Please submit an email to wsr.serenity@gmail.com (with the word 'Scholarship Request' in the subject) describing why you are requesting the scholarship. Please note that only partial scholarships are available.
 <% end %>

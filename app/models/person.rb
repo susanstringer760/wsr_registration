@@ -90,7 +90,8 @@ class Person < ActiveRecord::Base
      #scholarship_donation = params[:scholarship_donation].to_f
      scholarship_amount = 0.0
      scholarship_donation = 0.0
-     scholarship_applicant = (params[:scholarship_applicant] == 0 ) ? "false" : "true"
+     #scholarship_applicant = (params[:scholarship_applicant] == 0 ) ? "false" : "true"
+     scholarship_applicant = (params[:scholarship_applicant].to_i == 0 ) ? "false" : "true"
 
      if ( registration_status.eql?('facilitator')) 
        payment_status = 'paid'
@@ -104,7 +105,6 @@ class Person < ActiveRecord::Base
 	 scholarship_donation = balance_due.abs
 	 balance_due = 0.0
        else
-         #registration_status = 'pending';
          registration_status = 'pending' unless registration_status.eql?('hold');
          payment_status = 'partial';
        end
@@ -300,7 +300,7 @@ class Person < ActiveRecord::Base
      params.push(["Name", name.to_s]);
      params.push(["Phone", phone.to_s]);
      params.push(["Registration status",  registration_status.to_s]);
-     params.push(["Payment status",  payment_status.to_s]);
+     #params.push(["Payment status",  payment_status.to_s]);
      params.push(["Total due",  to_currency(total_due).to_s]);
      params.push(["Paid",  to_currency(paid_amount).to_s]);
      params.push(["Balance due",  to_currency(balance_due).to_s]);
@@ -540,10 +540,6 @@ class Person < ActiveRecord::Base
 
   def self.generate_csv(facilitators, occupancy_hash, initial_scholarship, csv_fname)
 
-    file_id = DateTime.now.strftime("%Y%m%d_%H%M")
-    fname_only = File.basename(csv_fname)
-    dir = File.dirname(csv_fname)
-    csv_fname = "#{dir}/#{file_id}.#{fname_only}"
     notes_fname = csv_fname.gsub('csv','notes.csv');
 
     f = File.new(csv_fname,'w')
@@ -607,10 +603,11 @@ class Person < ActiveRecord::Base
     header_arr.push("# registered")
     header_arr.push("# pending")
     header_arr.push("# hold")
+    header_arr.push("# Scholarship requested")
     header_arr.push("Total due")
     header_arr.push("Total paid")
     header_arr.push("Balance due")
-    header_arr.push("Scholarship requested")
+    #header_arr.push("Scholarship requested")
     header_arr.push("Scholarships given")
     header_arr.push("Scholarships available")
 
@@ -632,6 +629,8 @@ class Person < ActiveRecord::Base
     facilitators.each do |f|
       facilitator_deduction += f.total_due
     end
+xx = Array.new
+xx.push("asdf: #{facilitator_deduction}")
 
     # get counts for waitlisted people so they're not included in totals
     triple_waitlist = Person.count(:all, :conditions => ["registration_status = ? AND occupancy = ?", "wait_list", 3])
@@ -681,12 +680,13 @@ class Person < ActiveRecord::Base
     stats_arr.push(total_registered)
     stats_arr.push(registered_pending_count)
     stats_arr.push(registered_hold_count)
+    stats_arr.push(total_scholarship_applicants)
 
     # payment information
     stats_arr.push(total_due)
     stats_arr.push(total_paid)
     stats_arr.push(total_balance_due)
-    stats_arr.push(total_scholarship_applicants)
+    #stats_arr.push(total_scholarship_applicants)
     stats_arr.push(total_scholarship_given)
     stats_arr.push(total_available_scholarships)
 

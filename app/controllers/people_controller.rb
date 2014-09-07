@@ -318,17 +318,24 @@ class PeopleController < ApplicationController
 
   def report
 
-   report_type = params[:report_type]
+   @report_type = params[:report_type]
    split_report = params[:split_report]
 
-   if (report_type.eql?('csv'))
-     # generate csv with all information 
+   if (@report_type.eql?('csv'))
+     # add timestamp to csv fname 
+     file_id = DateTime.now.strftime("%Y%m%d_%H%M")
+     fname_only = File.basename(@csv_fname)
+     dir = File.dirname(@csv_fname)
+     @csv_fname = "#{dir}/#{file_id}.#{fname_only}"
+     @msg = "Success: #{@csv_fname} generated"
      @arr = Person.generate_csv(@facilitators, @occupancy_by_id,@initial_scholarship,@csv_fname)
-     render :text=>"Report generated: #{@csv_fname}"
-     return
+      respond_to do |format|
+        format.html # report.html.erb
+        format.json { render json: @person }
+      end
    end
 
-   if (report_type.eql?('roommate'))
+   if (@report_type.eql?('roommate'))
      @date_time = DateTime.now.strftime("%F %T")
     date_time = Time.now.strftime("%Y%m%d_%H%M") 
     #fname = "roommates.csv"
@@ -337,7 +344,7 @@ class PeopleController < ApplicationController
     Person.create_roommate_report(full_path, @occupancy_by_id)
    end
 
-   if (report_type.eql?('stats'))
+   if (@report_type.eql?('stats'))
      # generate status report
      @date_time = DateTime.now.strftime("%F %T")
      @arr = Person.report(@facilitators, @initial_scholarship,split_report)
@@ -346,7 +353,7 @@ class PeopleController < ApplicationController
    end
 
 
-   if (report_type.eql?('send_all'))
+   if (@report_type.eql?('send_all'))
 
 #    # get a hash of notes where key is note type
 #    # and value is array note objects
