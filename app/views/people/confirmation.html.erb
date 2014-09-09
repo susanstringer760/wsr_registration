@@ -1,0 +1,4 @@
+<% date_time = DateTime.now.strftime("%F %T") %>
+<h3><%= date_time %>: Confirmation sent to: <%= @person.email %>( <%= @person.first_name %>&nbsp;<%= @person.last_name %>)</h3>
+<%= link_to 'Back to email log', email_log_path %></br>
+<%= link_to 'Back to list', people_path %>
