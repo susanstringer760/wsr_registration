@@ -28,8 +28,10 @@
 <% } %>
 </table>
 <p></p>
+<hr>
 
 <% if (@confirmation_flag.eql?('true')) %>
+  <%= render :partial=>'shared/confirmation' %>
   <p></p>
   <%= link_to 'Send confirmation', mail_confirmation_path(@person.id, :confirmation_type=>'confirm') %><br>
   <%= link_to 'Send final confirmation', mail_confirmation_path(@person.id, :confirmation_type=>'final') %>
