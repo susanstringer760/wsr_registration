@@ -2,7 +2,7 @@ Hi <%= @person.first_name %>,
 <p></p>
 Thank you for registering for the 2014 Women's Spiritual Retreat. 
 <p></p>
-The retreat will be held at the YMCA of the Rockies in Estes Park from October 3-5.  The topic for the year's retreat is "Living Sober Higher Powered: The Steps in My Life".
+The retreat will be held at the YMCA of the Rockies in Estes Park from October 3-5.  The theme of the Retreat weekend is Living Sober through the Steps--How to live the program in peace and balance.  It will be a weekend of interaction, meditation, learning, sharing and fun.  The panels, workshops, speakers and sessions will focus on higher power, self care and living sober suggestions from people in different stages of sobriety.
 <p></p>
 This is a confirmation of your registration status. Please review the information below and let me know if there are any changes.
 <p></p>
@@ -15,10 +15,22 @@ This is a confirmation of your registration status. Please review the informatio
 
 <% if (@person.paid_amount == 0 ) %>
 Please note that you must pay a deposit by September 15 in order to hold your spot.
+<% elsif ( (@person.paid_amount > 0) and (@person.paid_amount < 100) ) %>
+You have paid a deposit of <%= number_to_currency(@person.paid_amount) %>.  A total deposit of $100 is due by September 15.
 <% end %>
 
 <% if (@person.balance_due > 0.0) %>
 Your current balance of <%= number_to_currency(@person.balance_due) %> is due by September 23th. Please contact me if you have any questions regarding payment.
+<% end %>
+<p></p>
+
+<% if (@person.scholarship_donation > 0 )  %>
+Thank you so much for your donation towards the scholarship fund and helping to extend this opportunity to as many women as possible. Your generosity is greatly appreciated!
+<% end %>
+<p></p>
+
+<% if ( (!@person.scholarship_applicant ) and (@person.scholarship_donation == 0)) %>
+There are several applicants for scholarships and we are seeking donations to help extend this opportunity to as many women as possible.  Any amount would be immensely appreciated.  You may include any additional amount in your payment and it will be applied to the scholarship fund.
 <% end %>
 <p></p>
 
@@ -34,10 +46,10 @@ The YMCA can accommodate vegetarian or gluten free meal options (not vegan, but 
 You have applied for a scholarship.  Please submit an email to wsr.serenity@gmail.com (with the word 'Scholarship Request' in the subject) describing why you are requesting the scholarship. Please note that only partial scholarships are available. Scholarship recipients will be registered for a triple occupancy room and there will be some service positions that may need to be filled.
 <% end %>
 <p></p>
-You will receive additional information closer to the retreat. 
+You will receive additional information closer to the retreat, including a list of items to bring, logistics and agenda.
 <p></p>
-Please don't hesitiate to contact me if you have further questions.
-wsr.serenity@gmail.com (720-456-9997).  Email is preferred.
+Please don't hesitate to contact me if you have further questions.
+wsr.serenity@gmail.com (720-456-9997). Email is preferable but either is fine.
 <p></p>
 Thanks!
 <p></p>
