@@ -104,6 +104,7 @@ class Person < ActiveRecord::Base
          registration_status = 'registered'
 	 scholarship_donation = balance_due.abs
 	 balance_due = 0.0
+         payment_status = 'paid'
        else
          registration_status = 'pending' unless registration_status.eql?('hold');
          payment_status = 'partial';
