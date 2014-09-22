@@ -1279,10 +1279,16 @@ xx.push("asdf: #{facilitator_deduction}")
 
   end
 
-  def self.generate_email_log(person_id)
+  def self.generate_email_log(person_id, confirmation_type)
 
     # create a note to log the confirmation email
-    email_log_note = Note.new(:date_time=>Time.now, :content=>'confirmation sent', :person_id=>person_id, :note_type=>'email_log')
+    email_log_note = Note.new(:date_time=>Time.now, :content=>'confirmation sent', :person_id=>person_id, :note_type=>'email_log') if (confirmation_type.eql?('confirm'))
+
+    # reminder
+    email_log_note = Note.new(:date_time=>Time.now, :content=>'reminder sent', :person_id=>person_id, :note_type=>'email_log') if (confirmation_type.eql?('reminder'))
+
+    # final 
+    email_log_note = Note.new(:date_time=>Time.now, :content=>'final confirmation sent', :person_id=>person_id, :note_type=>'email_log') if (confirmation_type.eql?('final'))
 
     # add the note to the person
     return email_log_note

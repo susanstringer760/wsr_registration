@@ -234,14 +234,12 @@ class PeopleController < ApplicationController
       PersonMailer.registration_confirmation(@person,@params,@notes_hash).deliver
     end
     if (confirmation_type.eql?('reminder'))
-#render :text=>"asdf: #{@wsr_registration_flyer}"
-#return
       PersonMailer.reminder_confirmation(@person,@params,@wsr_registration_flyer).deliver
     end
 
 
     # add email log note
-    email_log_note = Person.generate_email_log(@person.id)
+    email_log_note = Person.generate_email_log(@person.id, confirmation_type)
     @person.notes.push(email_log_note)
 
   end
@@ -377,28 +375,28 @@ class PeopleController < ApplicationController
 #    # add email log note
 #    email_log_note = Person.generate_email_log(@person.id)
 #    @person.notes.push(email_log_note)
-
-      # an array of facilitators id #
-      people = Person.find(:all)
-      count = 0
-      people.each do |p|
-        next if @exclude_id.grep(p.id).length > 0
-	next if p.registration_status.eql?('wait_list')
-        @person = p
-        # get a hash of notes where key is note type
-        # and value is array note objects
-        @notes_hash = Hash.new
-        @params = Array.new
-        @notes = Person.get_notes(@person)
-        @notes_hash['confirmation'] = @notes['confirmation']
-        @params = Person.show_confirmation(@person, @occupancy_by_id, @prices)
-        PersonMailer.registration_confirmation(@person,@params,@notes_hash).deliver
-        # add email log note
-        email_log_note = Person.generate_email_log(@person.id)
-        @person.notes.push(email_log_note)
-        #PersonMailer.registration_confirmation(p,@params,{}).deliver
-	sleep(30)
-      end
+#
+#      # an array of facilitators id #
+#      people = Person.find(:all)
+#      count = 0
+#      people.each do |p|
+#        next if @exclude_id.grep(p.id).length > 0
+#	next if p.registration_status.eql?('wait_list')
+#        @person = p
+#        # get a hash of notes where key is note type
+#        # and value is array note objects
+#        @notes_hash = Hash.new
+#        @params = Array.new
+#        @notes = Person.get_notes(@person)
+#        @notes_hash['confirmation'] = @notes['confirmation']
+#        @params = Person.show_confirmation(@person, @occupancy_by_id, @prices)
+#        PersonMailer.registration_confirmation(@person,@params,@notes_hash).deliver
+#        # add email log note
+#        email_log_note = Person.generate_email_log(@person.id)
+#        @person.notes.push(email_log_note)
+#        #PersonMailer.registration_confirmation(p,@params,{}).deliver
+#	sleep(30)
+#      end
    end
 
   end
