@@ -29,11 +29,19 @@
 </table>
 <p></p>
 <hr>
-
 <% if (@confirmation_flag.eql?('true')) %>
-  <%= render :partial=>'shared/confirmation' %>
-  <p></p>
-  <%= link_to 'Send confirmation', mail_confirmation_path(@person.id, :confirmation_type=>'confirm') %><br>
-  <%= link_to 'Send final confirmation', mail_confirmation_path(@person.id, :confirmation_type=>'final') %>
+  <% if (@confirmation_type.eql?('initial')) %>
+    <%= render :partial=>'shared/confirmation' %>
+    <hr>
+    <%= link_to 'Send confirmation', mail_confirmation_path(@person.id, :confirmation_type=>'confirm') %><br>
+  <% elsif (@confirmation_type.eql?('reminder')) %>
+    <%= render :partial=>'shared/reminder' %>
+    <hr>
+    <%= link_to 'Send reminder ', mail_confirmation_path(@person.id, :confirmation_type=>'reminder') %><br>
+  <% elsif (@confirmation_type.eql?('final')) %>
+    <%= render :partial=>'shared/final' %>
+    <hr>
+    <%= link_to 'Send reminder ', mail_confirmation_path(@person.id, :confirmation_type=>'final') %><br>
+  <% end %>
 <% end %>
-
+<p></p>

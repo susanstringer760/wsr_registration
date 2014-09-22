@@ -75,6 +75,7 @@ class PeopleController < ApplicationController
     @notes_hash = Hash.new
     @params = Array.new
     @confirmation_flag = params[:confirmation]
+    @confirmation_type = params[:type]
     if (@confirmation_flag.eql?('true'))
       notes['confirmation'].nil? ?
         @notes_hash['confirmation'] = {} :
@@ -175,6 +176,7 @@ class PeopleController < ApplicationController
 
     @person = Person.find(params[:id])
     @roommates  = Person.roommate_list(@person.id)
+    @note_hash = Person.get_notes(@person)
 
     person_params = params[:person]
     params[:person] = Person.set_values(person_params, @prices)
@@ -231,6 +233,11 @@ class PeopleController < ApplicationController
       #PersonMailer.registration_confirmation(@person,@params,@notes_hash, @admin_email).deliver
       PersonMailer.registration_confirmation(@person,@params,@notes_hash).deliver
     end
+    if (confirmation_type.eql?('reminder'))
+#render :text=>"asdf: #{@wsr_registration_flyer}"
+#return
+      PersonMailer.reminder_confirmation(@person,@params,@wsr_registration_flyer).deliver
+    end
 
 
     # add email log note
@@ -276,7 +283,7 @@ class PeopleController < ApplicationController
 
   end
 
-  def initial_confirmation(person)
+  def xxinitial_confirmation(person)
 
     person_hash = Hash.new
     person_hash['first_name'] = person.first_name

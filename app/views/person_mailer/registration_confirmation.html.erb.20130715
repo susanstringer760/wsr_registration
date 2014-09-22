@@ -1,1 +1,0 @@
-<h1><%= @person.first_name %> and <%= @person.last_name %></t1>

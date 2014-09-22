@@ -1,0 +1,27 @@
+Hi <%= @person.first_name %>,
+<p></p>
+We are so excited that the retreat is fast approaching.  It promises to be a weekend of interaction, meditation, learning, sharing and fun.
+<p></p>
+Our records indicate that you currently have an outstanding balance of <%= number_to_currency(@person.balance_due) %> and this is a reminder that the remainder is now due. 
+<p></p>
+Please review the information below and let me know if there are any changes.
+<p></p>
+<% @params.each do |p| %>
+  <% title = p[0] %>
+  <% value = p[1] %>
+  <%= title %>: <%= value %><br>
+<% end %>
+<p></p>
+You will receive additional information closer to the retreat, including a list of items to bring, logistics and agenda.
+<p></p>
+*************************************************************<br>
+We have a few spots open, so if you know of anybody who might be interested, please feel free to forward the attached registration flyer which can be mailed in or the form can be submitted with the following link:<br>
+<%= link_to "Registration form", "https://docs.google.com/forms/d/1VJuP5JKfv4Um2n_HpPlQu_poBPRyxzwlffbZt1MMMxI/viewform?c=0&w=1&usp=mail_form_link" %>
+<p></p>
+Please don't hesitate to contact us if you have further questions.
+Susan S (720-456-9997), Karen B (303-588-3696)<br>
+wsr.serenity@gmail.com (720-456-9997).
+<p></p>
+Thanks! We're looking forward to seeing you :-)
+<p></p>
+Susan

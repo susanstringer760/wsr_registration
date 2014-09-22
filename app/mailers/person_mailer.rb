@@ -38,6 +38,20 @@ class PersonMailer < ActionMailer::Base
 
   end
 
+  def reminder_confirmation(person, params, attachment_fname)
+
+     @person = person
+     @params = params
+     basename=File.basename(attachment_fname)
+     cc_to = "susanstringer760@comcast.net"
+
+     mail.attachments[basename] = {:mime_type => 'application/pdf',
+                                    :content => File.read(attachment_fname)}
+
+     mail(:to=> @person.email, :cc=>"susanstringer760@comcast.net", :subject => "WSR Confirmation for #{@person.first_name} #{@person.last_name}")
+
+  end
+
   def registration_report(email_list,arr)
 
      @email_list = email_list

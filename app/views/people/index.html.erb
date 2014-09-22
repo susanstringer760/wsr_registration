@@ -117,7 +117,11 @@
     <td><%= person.payment_status %></td>
     <td><%= person.registration_status %></td>
     <td>
-      <%= link_to "Send confirmation", person_path(:id=>person.id, :confirmation=>true) %><br></td>
+      Send confirmation:
+      <%= link_to "Initial", person_path(:id=>person.id, :confirmation=>true, :type=>'initial') %><br>
+      <%= link_to "Reminder", person_path(:id=>person.id, :confirmation=>true, :type=>'reminder') %><br>
+      <%= link_to "Final", person_path(:id=>person.id, :confirmation=>true, :type=>'final') %><br>
+    </td>
     <td><%= link_to 'Add note', new_person_note_path(:person_id=>person.id) %><br>
     <%= link_to "Show", person_path(:id=>person.id,:confirmation=>false) %><br>
     <%= link_to 'Edit', edit_person_path(person) %><br>

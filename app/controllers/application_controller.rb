@@ -42,6 +42,8 @@ class ApplicationController < ActionController::Base
 
     @final_confirmation_pdf = WsrRegistration::Application.config.final_confirmation_pdf
 
+    @wsr_registration_flyer = WsrRegistration::Application.config.wsr_registration_flyer
+
     @csv_fname = WsrRegistration::Application.config.csv_fname
 
   end
