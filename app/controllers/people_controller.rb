@@ -334,10 +334,10 @@ class PeopleController < ApplicationController
      @csv_fname = "#{dir}/#{file_id}.#{fname_only}"
      @msg = "Success: #{@csv_fname} generated"
      @arr = Person.generate_csv(@facilitators, @occupancy_by_id,@initial_scholarship,@csv_fname)
-      respond_to do |format|
-        format.html # report.html.erb
-        format.json { render json: @person }
-      end
+     respond_to do |format|
+       format.html # report.html.erb
+       format.json { render json: @person }
+     end
    end
 
    if (@report_type.eql?('roommate'))

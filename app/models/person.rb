@@ -552,6 +552,8 @@ class Person < ActiveRecord::Base
     overall_header_arr.unshift("Report date")
     overall_header_arr.unshift("Overall stats,,,,,,,,,,,,,,,,,,,,,,,")
     overall_stats_arr = self.overall_registration_stats(facilitators, initial_scholarship)
+    #xx = self.overall_registration_stats(facilitators, initial_scholarship)
+#return xx
     overall_stats_arr.unshift("#{date_time}")
     overall_stats_arr.unshift("")
     overall_header_arr.each_index do |i|
@@ -630,8 +632,8 @@ class Person < ActiveRecord::Base
     facilitators.each do |f|
       facilitator_deduction += f.total_due
     end
-xx = Array.new
-xx.push("asdf: #{facilitator_deduction}")
+#xx = Array.new
+#xx.push("asdf: #{facilitator_deduction}")
 
     # get counts for waitlisted people so they're not included in totals
     triple_waitlist = Person.count(:all, :conditions => ["registration_status = ? AND occupancy = ?", "wait_list", 3])
@@ -659,14 +661,13 @@ xx.push("asdf: #{facilitator_deduction}")
     #total_balance_due = self.sum('balance_due') + total_scholarship_given
     total_balance_due = self.sum('balance_due')
 
-
     # deduct donated scholarships from total paid so it isn't include 2 times in report
     total_paid = self.sum('paid_amount') - facilitator_deduction - self.sum('scholarship_donation')
     #total_paid = self.sum('paid_amount') - facilitator_deduction - self.sum('scholarship_donation') + self.sum('scholarship_amount')
 
     # number on wait list
     total_registered = Person.all.length 
-    total_waitlist_count = 
+    #total_waitlist_count = 
     registered_pending_count = self.get_count('registration_status', 'pending')
     registered_paid_count = self.get_count('registration_status', 'registered') - facilitators.length
     registered_hold_count = self.get_count('registration_status', 'hold')
@@ -678,7 +679,8 @@ xx.push("asdf: #{facilitator_deduction}")
     stats_arr.push(triple)
 
     # registration counts
-    stats_arr.push(total_registered)
+    #stats_arr.push(total_registered)
+    stats_arr.push(registered_paid_count)
     stats_arr.push(registered_pending_count)
     stats_arr.push(registered_hold_count)
     stats_arr.push(total_scholarship_applicants)
