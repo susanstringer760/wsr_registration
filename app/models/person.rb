@@ -1274,7 +1274,8 @@ class Person < ActiveRecord::Base
     key = "#{person.id};#{person.first_name} #{person.last_name}"
     #note_hash[key] = Note.find(:all,:conditions => ["person_id= ? AND note_type= ?", person.id, "email_log"])
     #note_hash[person.id] = Note.find(:all,:conditions => ["person_id= ? AND note_type= ?", person.id, "email_log"])
-    note_hash[person.id] = Note.find(:all,:conditions => ["person_id= ? AND note_type= ? and content=?", person.id, "email_log", "confirmation sent"])
+    #note_hash[person.id] = Note.find(:all,:conditions => ["person_id= ? AND note_type= ? and content=?", person.id, "email_log", "confirmation sent"])
+    note_hash[person.id] = Note.find(:all,:conditions => ["person_id= ? AND note_type= ?", person.id, "email_log", ])
 
     return note_hash
 
