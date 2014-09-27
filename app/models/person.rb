@@ -605,6 +605,7 @@ class Person < ActiveRecord::Base
     header_arr.push("# Triple")
     header_arr.push("# registered")
     header_arr.push("# pending")
+    header_arr.push("# registration only")
     header_arr.push("# hold")
     header_arr.push("# Scholarship requested")
     header_arr.push("Total due")
@@ -643,6 +644,7 @@ class Person < ActiveRecord::Base
     single = get_count('occupancy', '1') - single_waitlist
     double = get_count('occupancy', '2') - double_waitlist
     triple = get_count('occupancy', '3') - triple_waitlist
+    registration_only = get_count('occupancy', '4')
 
     # registration stats 
     # don't include wait listed people in total due
@@ -682,6 +684,7 @@ class Person < ActiveRecord::Base
     #stats_arr.push(total_registered)
     stats_arr.push(registered_paid_count)
     stats_arr.push(registered_pending_count)
+    stats_arr.push(registration_only)
     stats_arr.push(registered_hold_count)
     stats_arr.push(total_scholarship_applicants)
 
